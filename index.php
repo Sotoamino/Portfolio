@@ -25,13 +25,6 @@ $projects = $pdo->query("SELECT * FROM projets ORDER BY ordre ASC")->fetchAll();
 	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
 	<link rel="icon" type="image/x-icon" href="/images/favicon.ico">
     <script src="https://cdn.jsdelivr.net/npm/particles.js@2.0.0/particles.min.js"></script>
-    <meta property="og:title" content="<?= htmlspecialchars($settings['first_name']) ?> <?= htmlspecialchars($settings['last_name']) ?>" />
-    <meta property="og:description" content="Découvrez mon profil" />
-    <meta property="og:image" content="https://salamagnon.fr/images/preview.png" />
-    <meta property="og:url" content="https://salamagnon.fr/" />
-    <meta property="og:type" content="website" />
-    <meta property="og:site_name" content="<?= htmlspecialchars($settings['first_name']) ?> <?= htmlspecialchars($settings['last_name']) ?>" />
-    <meta name="twitter:card" content="summary_large_image" />
 </head>
 <body>
 <nav>
@@ -60,7 +53,7 @@ $projects = $pdo->query("SELECT * FROM projets ORDER BY ordre ASC")->fetchAll();
     </div>
 </header>
 <div class="cv-download">
-    <a href="./files/cv.pdf" download="Liam_Salamagnon_CV" class="download-btn">
+    <a href="./assets/files/cv.pdf" download="<?= htmlspecialchars($settings['first_name']) ?>_<?= htmlspecialchars($settings['last_name']) ?>_CV" class="download-btn">
         <i class="fas fa-download"></i> Télécharger mon CV
     </a>
 </div>

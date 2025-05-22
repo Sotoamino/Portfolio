@@ -2,16 +2,19 @@
 require_once './tools/sqlconnect.php';
 
 $id = $_GET['id'] ?? null;
+$experience = null;
+$error = null;
+
 if (!$id) {
-    die('ID manquant');
-}
+    $error = "ID manquant.";
+} else {
+    $stmt = $pdo->prepare("SELECT * FROM experiences WHERE id = ?");
+    $stmt->execute([$id]);
+    $experience = $stmt->fetch(PDO::FETCH_ASSOC);
 
-$stmt = $pdo->prepare("SELECT content FROM experiences WHERE id = ?");
-$stmt->execute([$id]);
-$experience = $stmt->fetch(PDO::FETCH_ASSOC);
-
-if (!$experience) {
-    die('Expérience introuvable');
+    if (!$experience == null) {
+        $error = "La présentation n'a pas encore été rédigé.";
+    }
 }
 ?>
 
@@ -20,10 +23,16 @@ if (!$experience) {
 <head>
     <meta charset="UTF-8" />
     <title>Prévisuel</title>
-    <link rel="stylesheet" href="/assets//css/experiences.css">
-
-
+    <link rel="stylesheet" href="./assets/css/missions.css">
 </head>
 <body>
+    <?php if ($error): ?>
+        <div class="mission-error">
+            <h2>Oups...</h2>
+            <p><?= htmlspecialchars($error) ?></p>
+        </div>
+    <?php else: ?>
         <?= $experience['content'] ?>
+    <?php endif; ?>
 </body>
+</html>

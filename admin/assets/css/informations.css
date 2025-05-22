@@ -1,0 +1,376 @@
+body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+    background: #f5f5f5;
+}
+
+.navbar {
+    background-color: #333;
+    color: white;
+    padding: 15px 20px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.navbar nav a {
+    color: white;
+    margin-left: 15px;
+    text-decoration: none;
+    font-weight: bold;
+}
+
+.navbar nav a:hover {
+    text-decoration: underline;
+}
+
+.content {
+    max-width: 90%;
+    margin: 40px auto;
+    background: white;
+    padding: 30px;
+    border-radius: 12px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+}
+
+/* ===== SECTIONS ===== */
+.section {
+    margin-bottom: 40px;
+}
+
+.section h3 {
+    border-bottom: 2px solid #eee;
+    padding-bottom: 8px;
+    margin-bottom: 20px;
+    color: #333;
+}
+
+/* ===== FORM LAYOUT ===== */
+.form-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 20px;
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+}
+
+.form-group label {
+    font-weight: bold;
+    margin-bottom: 6px;
+    font-size: 14px;
+}
+
+.form-group input,
+.form-group select,
+.form-group textarea {
+    padding: 8px;
+    border-radius: 6px;
+    border: 1px solid #ccc;
+    font-size: 14px;
+}
+
+form button[type="submit"] {
+    margin-top: 20px;
+    background-color: #333;
+    color: white;
+    padding: 12px 24px;
+    border: none;
+    border-radius: 6px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+form button[type="submit"]:hover {
+    background-color: #555;
+}
+
+/* ===== RESEAUX SOCIAUX ===== */
+.social-input {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 10px;
+}
+
+.social-input i {
+    font-size: 18px;
+    width: 24px;
+    text-align: center;
+    color: #555;
+}
+
+#add-social {
+    background-color: #eee;
+    border: 1px dashed #aaa;
+    padding: 10px;
+    border-radius: 8px;
+    cursor: pointer;
+    text-align: center;
+    transition: background-color 0.2s ease-in-out;
+}
+
+#add-social:hover {
+    background-color: #ddd;
+}
+
+/* ===== KEYWORDS ===== */
+#keywords-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 5px;
+}
+
+.keyword {
+    background-color: #e0e0e0;
+    padding: 6px 10px;
+    border-radius: 12px;
+    font-size: 13px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.keyword .remove {
+    cursor: pointer;
+    color: #888;
+}
+
+.social-input {
+  display: flex;
+  align-items: center;
+  margin-bottom: 10px;
+  gap: 10px;
+}
+
+.social-input i {
+  width: 24px;
+}
+
+#add-social {
+  margin-top: 10px;
+  cursor: pointer;
+  color: #007BFF;
+  font-weight: bold;
+}
+
+.keyword-tag {
+  display: inline-block;
+  background-color: #eee;
+  padding: 5px 10px;
+  margin: 5px;
+  border-radius: 16px;
+  position: relative;
+}
+
+.keyword-tag button {
+  background: none;
+  border: none;
+  font-weight: bold;
+  margin-left: 8px;
+  cursor: pointer;
+}
+
+.popup-overlay {
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: rgba(0,0,0,0.5);
+  display: flex; justify-content: center; align-items: center;
+  z-index: 1000;
+}
+.popup-content {
+  background: white;
+  padding: 20px;
+  border-radius: 10px;
+  text-align: center;
+}
+.popup-content button {
+  margin: 5px;
+  padding: 10px 20px;
+  font-size: 1.1em;
+  cursor: pointer;
+}
+.social-input {
+  display: flex;
+  align-items: center;
+  margin-bottom: 8px;
+}
+.social-input i {
+  font-size: 1.5em;
+  margin-right: 8px;
+  width: 30px;
+  text-align: center;
+}
+.social-input input {
+  flex: 1;
+  padding: 6px 8px;
+  font-size: 1em;
+}
+.remove-social {
+  background: transparent;
+  border: none;
+  color: #f44336;
+  font-weight: bold;
+  font-size: 1.4em;
+  cursor: pointer;
+  margin-left: 6px;
+}
+.keyword-tag {
+  display: inline-block;
+  background: #4285f4;
+  color: white;
+  padding: 4px 8px;
+  border-radius: 12px;
+  margin: 4px 4px 0 0;
+  font-size: 0.9em;
+  user-select: none;
+}
+.keyword-tag button {
+  border: none;
+  background: transparent;
+  color: white;
+  margin-left: 6px;
+  cursor: pointer;
+  font-weight: bold;
+}
+
+/* Social input spacing et bouton */
+.social-input {
+  margin-bottom: 10px;
+  display: flex;
+  align-items: center;
+}
+.social-input input {
+  flex: 1;
+  padding: 6px 10px;
+  font-size: 1em;
+}
+.remove-social {
+  background: transparent;
+  border: none;
+  font-size: 1.4em;
+  color: red;
+  cursor: pointer;
+  margin-left: 6px;
+}
+
+/* Popup */
+.popup-overlay {
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: rgba(0,0,0,0.5);
+  display: flex; justify-content: center; align-items: center;
+  z-index: 1000;
+}
+.popup-content {
+  background: white;
+  padding: 20px;
+  border-radius: 10px;
+  text-align: center;
+}
+.popup-content button.social-choice {
+  margin: 5px;
+  padding: 10px 15px;
+  font-size: 1.1em;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+.popup-content button.social-choice i {
+font-size: 1.5em;
+}
+
+/* Keywords */
+.keyword-tag {
+display: inline-block;
+background: #4285f4;
+color: white;
+padding: 5px 8px;
+border-radius: 12px;
+margin: 4px 6px 0 0;
+font-size: 0.9em;
+user-select: none;
+}
+.keyword-tag button {
+border: none;
+background: transparent;
+color: white;
+margin-left: 6px;
+cursor: pointer;
+font-weight: bold;
+}
+
+
+
+/* Centrer la popup */
+#add-social-popup {
+  display: none; /* déjà dans ton code */
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: white;
+  padding: 20px 30px;
+  border-radius: 8px;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+  z-index: 9999;
+  width: 250px;
+  max-width: 90vw;
+}
+
+/* Contenu popup */
+#add-social-popup .popup-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+/* Boutons réseaux sociaux */
+#add-social-popup .social-choice {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 28px;
+  margin: 8px 12px;
+  color: #555;
+  transition: color 0.3s;
+  width: 50px;
+  height: 50px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border-radius: 6px;
+}
+
+#add-social-popup .social-choice:hover {
+  color: #0073b1; /* bleu LinkedIn par exemple */
+  background-color: #e0e0e0;
+}
+
+/* Conteneur des boutons réseaux */
+#add-social-popup .popup-content > .social-choice-group {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  margin-bottom: 20px;
+}
+
+/* Bouton Annuler */
+#close-popup {
+  background: #ccc;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 6px;
+  font-size: 16px;
+  cursor: pointer;
+  width: 100%;
+  max-width: 200px;
+}
+
+#close-popup:hover {
+  background: #bbb;
+}

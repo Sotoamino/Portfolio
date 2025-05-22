@@ -5,7 +5,7 @@ if (!isset($_SESSION['user_id'])) {
     echo json_encode(['success' => false, 'message' => 'Non autorisé']);
     exit;
 }
-require_once '../../../include/sqlconnect.php';
+require_once '../../../tools/sqlconnect.php';
 
 $data = $_POST;
 

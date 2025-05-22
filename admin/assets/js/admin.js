@@ -8,6 +8,7 @@ document.addEventListener('DOMContentLoaded', function () {
     'langues': ['assets/js/langues.js'],
     'experiences': ['assets/js/experiences.js'],
     'formations' : ['assets/js/formations.js'],
+    'informations': ['assets/js/informations.js'],
     'dashboard': ['assets/js/dashboard.js'],
     
     
