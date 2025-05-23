@@ -10,6 +10,7 @@ document.addEventListener('DOMContentLoaded', function () {
     'formations' : ['assets/js/formations.js'],
     'informations': ['assets/js/informations.js'],
     'dashboard': ['assets/js/dashboard.js'],
+    'projets': ['assets/js/projets.js'],
     
     
     

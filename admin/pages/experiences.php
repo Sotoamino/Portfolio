@@ -12,15 +12,7 @@ $experiences = $stmt->fetchAll(PDO::FETCH_ASSOC);
 <link rel="stylesheet" href="assets/css/experiences.css">
 
 <h2>Gestion des expériences</h2>
-<div style="font-size:10px">
-<p>Vous pouvez ajouter, modifier ou supprimer des expériences. Les expériences sont affichées dans l'ordre où elles apparaissent dans la base de données.</p>
-<p>Pour modifier l'ordre, faites glisser les lignes avec la poignée de gauche.</p>
-<p>Pour ajouter une nouvelle expérience, remplissez le formulaire ci-dessous.</p>
-<p>Pour modifier le contenu d'une expérience, cliquez sur le bouton "Éditer" à droite de l'expérience.</p>
-<p>Pour supprimer une expérience, cliquez sur le bouton "Supprimer".</p>
-<p>Pour mettre à jour l'ordre des expériences, cliquez sur le bouton "Enregistrer" après avoir déplacé les lignes.</p>
-<p>Pour ajouter des tags, écrivez votre tag et cloturez avec une virgule.</p>
-</div>
+
 <div style="display:none" id="message"></div>
 
 <table class="experience-table">

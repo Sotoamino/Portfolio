@@ -1,0 +1,141 @@
+.projet-table {
+  width: 100%;
+  max-width: 90%;
+  margin: 20px auto;
+  border-collapse: collapse;
+  font-family: Arial, sans-serif;
+  table-layout: fixed;
+}
+
+.projet-table th,
+.projet-table td {
+  padding: 10px;
+  border: 1px solid #ccc;
+  text-align: left;
+  vertical-align: middle;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.projet-table th {
+  background-color: #f5f5f5;
+  font-weight: bold;
+}
+
+.drag-handle {
+  text-align: center;
+  cursor: grab;
+  font-size: 18px;
+  color: #aaa;
+  max-width: 30px;
+}
+
+input[type="text"],
+input[type="date"],
+input[type="number"] {
+  padding: 6px 4px;
+  border: none;
+  outline: none;
+  background-color: transparent;
+  font-size: 14px;
+  width: 100%;
+}
+
+input[type="text"]:focus,
+input[type="date"]:focus {
+  border-bottom: 1px solid #999;
+  background-color: #f9f9f9;
+}
+
+/* Tags input */
+.tag-input-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+  padding: 4px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  background: #f9f9f9;
+  min-height: 40px;
+  align-items: center;
+  overflow: hidden;
+}
+
+.tag-input {
+  border: none;
+  flex: 1;
+  min-width: 80px;
+  padding: 5px;
+  font-size: 13px;
+  background: transparent;
+  outline: none;
+}
+
+.tag {
+  background-color: #e0e0e0;
+  color: #333;
+  padding: 4px 8px;
+  border-radius: 12px;
+  font-size: 13px;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.tag .remove-tag {
+  cursor: pointer;
+  font-weight: bold;
+}
+
+/* Buttons */
+button {
+  margin-right: 5px;
+  padding: 6px 10px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 14px;
+}
+
+button.save { background-color: #2196F3; color: white; }
+button.delete { background-color: #f44336; color: white; }
+button.open-editor { background-color: #555; color: white; }
+button.clear-endDate {
+  background-color: #FF9800;
+  color: white;
+  font-size: 12px;
+  padding: 4px 8px;
+  margin-top: 5px;
+}
+
+/* Formulaire ajout */
+form#add-form {
+  margin-top: 30px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  align-items: flex-start;
+  max-width: 960px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+form#add-form input,
+form#add-form button {
+  padding: 10px;
+  font-size: 14px;
+  flex: 1 1 200px;
+}
+
+#message {
+  margin-top: 15px;
+  padding: 10px;
+  background-color: #f0f0f0;
+  border-left: 5px solid #ccc;
+  display: none;
+}
+
+#add-form input {
+    border: 1px solid black
+}

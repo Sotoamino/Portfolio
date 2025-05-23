@@ -1,4 +1,16 @@
 <?php
+require_once 'tools/sqlconnect.php';
+
+$maintenance = $pdo->query("SELECT maintenance_status FROM settings LIMIT 1")
+                   ->fetchColumn();
+
+if ($maintenance == 1) {
+  header("Location: maintenance.php");
+  exit;
+}
+?>
+
+<?php
 require './tools/sqlconnect.php';
 session_start();
 if (empty($_SESSION['csrf_token'])) {
@@ -37,11 +49,24 @@ $projects = $pdo->query("SELECT * FROM projets ORDER BY ordre ASC")->fetchAll();
     </button>
   </div>
   <ul class="nav-links" id="nav-links">
+    <?php if (!empty($langues)): ?>
+    <li><a href="#langues">Langues</a></li>
+    <?php endif; ?>
+    <?php if (!empty($skills)): ?>
     <li><a href="#skills">Compétences</a></li>
+    <?php endif; ?>
+    <?php if (!empty($experiences)): ?>
     <li><a href="#experience">Expériences</a></li>
+    <?php endif; ?>
+    <?php if (!empty($projects)): ?>
     <li><a href="#projects">Projets</a></li>
+    <?php endif; ?>
+    <?php if (!empty($formations)): ?>
     <li><a href="#education">Formation</a></li>
+    <?php endif; ?>
+    <?php if (!empty($settings['contact_api_key'])): ?>
     <li><a href="#contact">Contact</a></li>
+    <?php endif; ?>
   </ul>
 </nav>
 
@@ -57,6 +82,8 @@ $projects = $pdo->query("SELECT * FROM projets ORDER BY ordre ASC")->fetchAll();
         <i class="fas fa-download"></i> Télécharger mon CV
     </a>
 </div>
+
+<?php if (!empty($skills)): ?>
 <section id="skills">
     <h2>Compétences</h2>
     <div class="card">
@@ -67,6 +94,11 @@ $projects = $pdo->query("SELECT * FROM projets ORDER BY ordre ASC")->fetchAll();
 			</div>
     </div>
 <?php endforeach; ?>
+</section>
+<?php endif; ?>
+
+<?php if (!empty($langues)): ?>
+<section id="langues">
     </div>
     <h2>Langues</h2>
     <div class="card">
@@ -79,7 +111,9 @@ $projects = $pdo->query("SELECT * FROM projets ORDER BY ordre ASC")->fetchAll();
         <?php endforeach; ?>
     </div>
 </section>
+<?php endif; ?>
 
+<?php if (!empty($experiences)): ?>
 <section id="experience">
     <h2>Expériences Professionnelles</h2>
     <?php foreach ($experiences as $exp): ?>
@@ -106,14 +140,15 @@ $projects = $pdo->query("SELECT * FROM projets ORDER BY ordre ASC")->fetchAll();
                     ?>
                 </div>
             <?php endif; ?>
-
             <button class="view-missions-btn" onclick="window.open('missions.php?id=<?= $exp['id'] ?>', 'missionsPopup', 'width=800,height=600,resizable=yes,scrollbars=yes')">
                 En savoir plus
             </button>
         </div>
     <?php endforeach; ?>
 </section>
+<?php endif; ?>
 
+<?php if (!empty($formations)): ?>
 <section id="formations">
     <h2>Formations</h2>
     <?php foreach ($formations as $forma): ?>
@@ -132,8 +167,9 @@ $projects = $pdo->query("SELECT * FROM projets ORDER BY ordre ASC")->fetchAll();
         </div>
     <?php endforeach; ?>
 </section>
+<?php endif; ?>
 
-
+<?php if (!empty($projects)): ?>
 <section id="projects">
     <h2>Projets</h2>
     <?php foreach ($projects as $proj): ?>
@@ -143,6 +179,8 @@ $projects = $pdo->query("SELECT * FROM projets ORDER BY ordre ASC")->fetchAll();
         </div>
     <?php endforeach; ?>
 	</section>
+<?php endif; ?>
+<?php if (!empty($settings['contact_api_key'])): ?>
 	<section id="contact">
     <h2>Contact</h2>
     <div class="card">
@@ -158,24 +196,29 @@ $projects = $pdo->query("SELECT * FROM projets ORDER BY ordre ASC")->fetchAll();
         <div id="message">Message envoyé avec succès !</div>
     </div>
 	</section>
+<?php endif; ?>
+  <?php if (
+    (!empty($settings['linkedin']) && $settings['linkedin_status']) ||
+    (!empty($settings['github']) && $settings['github_status'])
+  ): ?>
 <section id="usefull-links">
-  <h3>Mes liens utiles</h3>
+    <h3>Mes liens utiles</h3>
+    <div class="badges-wrapper">
 
-  <div class="badges-wrapper">
-    <?php if (!empty($settings['linkedin'])): ?>
-      <div class="linkedin-badge-wrapper">
-        <div class="badge-base LI-profile-badge"
-            data-locale="fr_FR"
-            data-size="large"
-            data-theme="dark"
-            data-type="HORIZONTAL"
-            data-vanity="<?= htmlspecialchars($settings['linkedin']) ?>"
-            data-version="v1">
+      <?php if (!empty($settings['linkedin']) && $settings['linkedin_status']): ?>
+        <div class="linkedin-badge-wrapper">
+          <div class="badge-base LI-profile-badge"
+              data-locale="fr_FR"
+              data-size="large"
+              data-theme="dark"
+              data-type="HORIZONTAL"
+              data-vanity="<?= htmlspecialchars($settings['linkedin']) ?>"
+              data-version="v1">
+          </div>
         </div>
-      </div>
-    <?php endif; ?>
+      <?php endif; ?>
 
-    <?php if (!empty($settings['github'])): ?>
+<?php if ((!empty($settings['github']) && $settings['github_status'])): ?>
       <div class="github-badge">
         <div class="github-header">
           <img src="https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png" alt="GitHub" class="github-logo">
@@ -186,8 +229,12 @@ $projects = $pdo->query("SELECT * FROM projets ORDER BY ordre ASC")->fetchAll();
         </div>
       </div>
     <?php endif; ?>
-  </div>
+
+    </div>
 </section>
+  <?php endif; ?>
+
+
 <footer>
     <p>
     <?php if (!empty($settings['location'])): ?>
@@ -202,10 +249,6 @@ $projects = $pdo->query("SELECT * FROM projets ORDER BY ordre ASC")->fetchAll();
         ☎ <?= htmlspecialchars($settings['phone']) ?>
     <?php endif; ?>
     </p>
-
-    <?php if (!empty($settings['linkedin'])): ?>
-        <p><a href="https://linkedin.com/in/<?= htmlspecialchars($settings['linkedin']) ?>" target="_blank" style="color:#3b82f6;">LinkedIn</a></p>
-    <?php endif; ?>
 </footer>
 <script>
     const phrases = <?= json_encode(explode(',', $settings['keywords'])) ?>;

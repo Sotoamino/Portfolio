@@ -1,0 +1,176 @@
+.formation-table {
+  width: 100%;
+  max-width: 90%;
+  margin: 20px auto;
+  border-collapse: collapse;
+  font-family: Arial, sans-serif;
+  table-layout: fixed;
+}
+
+.formation-table th,
+.formation-table td {
+  padding: 10px;
+  border: 1px solid #ccc;
+  text-align: left;
+  vertical-align: middle;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.formation-table th {
+  background-color: #f5f5f5;
+  font-weight: bold;
+}
+
+.drag-handle {
+  text-align: center;
+  cursor: grab;
+  font-size: 18px;
+  color: #aaa;
+  max-width: 30px;
+  user-select: none;
+}
+
+input[type="text"],
+input[type="date"],
+input[type="number"] {
+  padding: 6px 4px;
+  border: none;
+  outline: none;
+  background-color: transparent;
+  font-size: 14px;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+input[type="text"]:focus,
+input[type="date"]:focus {
+  border-bottom: 1px solid #999;
+  background-color: #f9f9f9;
+}
+
+/* Tags input (si tu en utilises) */
+.tag-input-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+  padding: 4px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  background: #f9f9f9;
+  min-height: 40px;
+  align-items: center;
+  overflow: hidden;
+}
+
+.tag-input {
+  border: none;
+  flex: 1;
+  min-width: 80px;
+  padding: 5px;
+  font-size: 13px;
+  background: transparent;
+  outline: none;
+}
+
+.tag {
+  background-color: #e0e0e0;
+  color: #333;
+  padding: 4px 8px;
+  border-radius: 12px;
+  font-size: 13px;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.tag .remove-tag {
+  cursor: pointer;
+  font-weight: bold;
+}
+
+/* Buttons */
+button {
+  margin-right: 5px;
+  padding: 6px 10px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 14px;
+  transition: background-color 0.3s ease;
+}
+
+button.save { background-color: #2196F3; color: white; }
+button.save:hover { background-color: #1976D2; }
+
+button.delete { background-color: #f44336; color: white; }
+button.delete:hover { background-color: #d32f2f; }
+
+button.open-editor { background-color: #555; color: white; }
+button.open-editor:hover { background-color: #333; }
+
+button.clear-endDate {
+  background-color: #FF9800;
+  color: white;
+  font-size: 12px;
+  padding: 4px 8px;
+  margin-top: 5px;
+  border-radius: 3px;
+}
+
+button.clear-endDate:hover {
+  background-color: #e68900;
+}
+
+/* Formulaire ajout */
+form#add-form {
+  margin-top: 30px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  align-items: flex-start;
+  max-width: 960px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+form#add-form input,
+form#add-form button {
+  padding: 10px;
+  font-size: 14px;
+  flex: 1 1 200px;
+  border: 1px solid black;
+  border-radius: 4px;
+  box-sizing: border-box;
+}
+
+#message {
+  margin-top: 15px;
+  padding: 10px;
+  background-color: #f0f0f0;
+  border-left: 5px solid #ccc;
+  display: none;
+  max-width: 960px;
+  margin-left: auto;
+  margin-right: auto;
+  font-weight: 600;
+}
+
+textarea.description {
+  width: 100%;
+  min-height: 60px;
+  resize: vertical;
+  padding: 6px 4px;
+  font-family: Arial, sans-serif;
+  font-size: 14px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  box-sizing: border-box;
+}
+
+textarea.description:focus {
+  border-color: #2196F3;
+  background-color: #f0f8ff;
+  outline: none;
+}

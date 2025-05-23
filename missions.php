@@ -1,4 +1,15 @@
 <?php
+require_once 'tools/sqlconnect.php';
+
+$maintenance = $pdo->query("SELECT maintenance_status FROM settings LIMIT 1")
+                   ->fetchColumn();
+
+if ($maintenance == 1) {
+  header("Location: maintenance.php");
+  exit;
+}
+?>
+<?php
 require_once './tools/sqlconnect.php';
 
 $id = $_GET['id'] ?? null;
