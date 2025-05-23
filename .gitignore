@@ -1,3 +1,4 @@
 /tools/options.php
 sitemap.xml
 /admin/update/backups/*
+/test*

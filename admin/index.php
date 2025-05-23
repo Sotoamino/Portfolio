@@ -26,7 +26,7 @@ if (!isset($_SESSION['user_id'])) {
             <a href="#" data-page="langues">🌐 Langues</a>
             <a href="#" data-page="experiences">📅 Expériences</a>
             <a href="#" data-page="formations">💼 Formations</a>
-            <a href="#" data-page="projets">(WIP) Projets</a>
+            <a href="#" data-page="projets">🗂️ Projets</a>
             <a href="logout.php">🚪 Déconnexion</a>
         </nav>
     </header>

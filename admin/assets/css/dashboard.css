@@ -176,3 +176,45 @@ input:checked + .slider:before {
   background: linear-gradient(145deg, #3498db, #2c80b4);
   transform: scale(1.03);
 }
+
+button {
+  background: linear-gradient(145deg, #3c8dbc, #2980b9);
+  border: none;
+  color: white;
+  padding: 12px 20px;
+  border-radius: 8px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  box-shadow: 0 4px 12px rgba(41, 128, 185, 0.4);
+  transition: background 0.3s ease, box-shadow 0.3s ease, transform 0.15s ease;
+  user-select: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+button:hover {
+  background: linear-gradient(145deg, #3498db, #2c80b4);
+  box-shadow: 0 6px 16px rgba(52, 152, 219, 0.6);
+  transform: translateY(-2px);
+}
+
+button:active {
+  transform: translateY(0);
+  box-shadow: 0 3px 8px rgba(41, 128, 185, 0.5);
+}
+
+button:focus-visible {
+  outline: 3px solid #2980b9;
+  outline-offset: 2px;
+}
+
+.cards-container {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 20px;
+  max-width: 1300px; /* limite la largeur globale si tu veux */
+  margin: 0 auto 40px; /* centrage horizontal + marge basse */
+  padding: 0 10px;
+}

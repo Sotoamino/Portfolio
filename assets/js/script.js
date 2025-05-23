@@ -49,26 +49,29 @@ observer.observe(document.querySelector('#skills'));
 
 // Envoi Ajax du formulaire
 const form = document.getElementById('contactForm');
-form.addEventListener('submit', e => {
-    e.preventDefault();
-    fetch('contact.php', {
-        method: 'POST',
-        body: new FormData(form)
-    })
-    .then(response => response.text())
-    .then(data => {
-        if (data.trim() === 'success') {
-            document.getElementById('message').style.display = 'block';
-            form.reset();
-        } else {
-            alert('Erreur lors de l\'envoi du message.');
-        }
-    })
-    .catch(error => {
-        console.error('Erreur:', error);
-        alert('Erreur réseau.');
+if (form) {
+    form.addEventListener('submit', e => {
+        e.preventDefault();
+        fetch('contact.php', {
+            method: 'POST',
+            body: new FormData(form)
+        })
+        .then(response => response.text())
+        .then(data => {
+            if (data.trim() === 'success') {
+                document.getElementById('message').style.display = 'block';
+                form.reset();
+            } else {
+                alert('Erreur lors de l\'envoi du message.');
+            }
+        })
+        .catch(error => {
+            console.error('Erreur:', error);
+            alert('Erreur réseau.');
+        });
     });
-});
+}
+
 	
 	
 	//navbar
@@ -111,6 +114,11 @@ if (username) {
     .then(response => response.json())
     .then(data => {
       const container = document.getElementById("github-profile");
+      if(!container) return;
+      if (data.message === "Not Found") {
+        container.innerHTML = "Utilisateur GitHub introuvable.";
+        return;
+      }
       container.innerHTML = `
         <img src="${data.avatar_url}" alt="${data.login}">
         <div class="github-details">

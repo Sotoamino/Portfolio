@@ -26,7 +26,6 @@ $formations = $pdo->query("SELECT * FROM formations ORDER BY ordre ASC")->fetchA
 $projects = $pdo->query("SELECT * FROM projets ORDER BY ordre ASC")->fetchAll();
 ?>
 
-<!DOCTYPE html>
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
