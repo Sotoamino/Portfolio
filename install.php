@@ -148,19 +148,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3
             ");
 
-            $install_success = true;
-            if (empty($_POST['admin_password'])) {
-                $admin_password = generateRandomPassword();
-            } else {
-                $admin_password = $_POST['admin_password'];
-            }
-            $admin_password_hash = password_hash($admin_password, PASSWORD_BCRYPT);
-
-
-
-            // Insérer admin avec id=1
-            $stmtAdmin = $pdo->prepare("INSERT INTO users (id, username, password_hash, email) VALUES (1, ?, ?, ?)");
-            $stmtAdmin->execute(['admin', $admin_password_hash, $email]);
+            
             $install_success = true;
             if (empty($admin_password)) {
                 $admin_password = generateRandomPassword();
