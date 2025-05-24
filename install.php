@@ -22,27 +22,145 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if (!empty($errors)) {
         foreach ($errors as $e) echo "<p style='color:red;'>$e</p>";
     } else {
-        try {
+        try {  
+            // Connexion PDO (sans base au début)
             $pdo = new PDO("mysql:host=$db_host;charset=utf8mb4", $db_user, $db_pass, [
                 PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
             ]);
 
-            $pdo->exec("CREATE DATABASE IF NOT EXISTS `$db_name` CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci");
-            $pdo->exec("USE `$db_name`");
+            // Création base si besoin + sélection
+            $pdo->exec("CREATE DATABASE IF NOT EXISTS $db_name CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci");
+            $pdo->exec("USE $db_name");
 
+            // Fonction mot de passe aléatoire
             function generateRandomPassword($length = 12) {
-                return bin2hex(random_bytes($length / 2));
+                return bin2hex(random_bytes($length/2));
             }
 
-            $pdo->exec("DROP TABLE IF EXISTS `settings`");
-            $pdo->exec("CREATE TABLE `settings` ( `id` int NOT NULL, `first_name` varchar(100), `last_name` varchar(100), `email` varchar(150), `phone` varchar(30), PRIMARY KEY (`id`) ) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci");
-            $stmt = $pdo->prepare("INSERT INTO `settings` (`id`, `first_name`, `last_name`, `email`, `phone`) VALUES (1, ?, ?, ?, ?)");
+            // Création table settings
+            $pdo->exec("DROP TABLE IF EXISTS settings");
+            $pdo->exec("
+                CREATE TABLE settings (
+                  id int NOT NULL,
+                  first_name varchar(100) DEFAULT NULL,
+                  last_name varchar(100) DEFAULT NULL,
+                  email varchar(150) DEFAULT NULL,
+                  phone varchar(30) DEFAULT NULL,
+                  location varchar(100) DEFAULT NULL,
+                  linkedin varchar(100) DEFAULT NULL,
+                  linkedin_status tinyint(1) NOT NULL DEFAULT 0,
+                  instagram varchar(100) DEFAULT NULL,
+                  instagram_status tinyint(1) NOT NULL DEFAULT 0,
+                  github varchar(100) DEFAULT NULL,
+                  github_status tinyint(1) NOT NULL DEFAULT 0,
+                  twitter varchar(100) DEFAULT NULL,
+                  twitter_status tinyint(1) NOT NULL DEFAULT 0,
+                  discord varchar(100) DEFAULT NULL,
+                  discord_status tinyint(1) NOT NULL DEFAULT 0,
+                  keywords text,
+                  contact_api_key varchar(255) DEFAULT NULL,
+                  contact_from varchar(255) DEFAULT NULL,
+                  contact_to varchar(255) DEFAULT NULL,
+                  maintenance_status tinyint(1) NOT NULL DEFAULT 0,
+                  PRIMARY KEY (id)
+                ) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci
+            ");
+
+            $stmt = $pdo->prepare("INSERT INTO settings (id, first_name, last_name, email, phone) VALUES (1, ?, ?, ?, ?)");
             $stmt->execute([$first_name, $last_name, $email, $phone]);
 
-            // Autres tables réduites pour clarté
-            $pdo->exec("DROP TABLE IF EXISTS `users`");
-            $pdo->exec("CREATE TABLE `users` ( `id` int NOT NULL AUTO_INCREMENT, `username` varchar(100), `password_hash` varchar(255), `email` varchar(255), PRIMARY KEY (`id`), UNIQUE(`username`), UNIQUE(`email`) ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3");
+            // Création autres tables (exemples, tu peux adapter)
+            $pdo->exec("DROP TABLE IF EXISTS competences");
+            $pdo->exec("
+                CREATE TABLE competences (
+                  id int NOT NULL AUTO_INCREMENT,
+                  nom varchar(100) NOT NULL,
+                  niveau int NOT NULL,
+                  ordre int DEFAULT 0,
+                  PRIMARY KEY (id)
+                ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3
+            ");
 
+            $pdo->exec("DROP TABLE IF EXISTS experiences");
+            $pdo->exec("
+                CREATE TABLE experiences (
+                  id int NOT NULL AUTO_INCREMENT,
+                  titre varchar(255) NOT NULL,
+                  entreprise varchar(255) NOT NULL,
+                  content text NOT NULL,
+                  tags varchar(255) DEFAULT NULL,
+                  startDate date NOT NULL,
+                  endDate date NOT NULL,
+                  ordre int DEFAULT 0,
+                  PRIMARY KEY (id)
+                ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3
+            ");
+
+            $pdo->exec("DROP TABLE IF EXISTS formations");
+            $pdo->exec("
+                CREATE TABLE formations (
+                  id int NOT NULL AUTO_INCREMENT,
+                  name varchar(255) NOT NULL,
+                  titre varchar(255) NOT NULL,
+                  startDate date NOT NULL,
+                  endDate date NOT NULL,
+                  ordre int NOT NULL,
+                  link varchar(255) NOT NULL,
+                  description text NOT NULL,
+                  PRIMARY KEY (id)
+                ) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci
+            ");
+
+            $pdo->exec("DROP TABLE IF EXISTS langues");
+            $pdo->exec("
+                CREATE TABLE langues (
+                  id int NOT NULL AUTO_INCREMENT,
+                  nom varchar(100) NOT NULL,
+                  niveau int NOT NULL,
+                  ordre int DEFAULT 0,
+                  PRIMARY KEY (id)
+                ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3
+            ");
+
+            $pdo->exec("DROP TABLE IF EXISTS projets");
+            $pdo->exec("
+                CREATE TABLE projets (
+                  id int NOT NULL AUTO_INCREMENT,
+                  titre varchar(255) NOT NULL,
+                  description text NOT NULL,
+                  link text CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci,
+                  ordre int DEFAULT 0,
+                  PRIMARY KEY (id)
+                ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3
+            ");
+
+            // Création table users & admin
+            $pdo->exec("DROP TABLE IF EXISTS users");
+            $pdo->exec("
+                CREATE TABLE users (
+                  id int NOT NULL AUTO_INCREMENT,
+                  username varchar(100) NOT NULL,
+                  password_hash varchar(255) NOT NULL,
+                  email varchar(255) NOT NULL,
+                  PRIMARY KEY (id),
+                  UNIQUE KEY username (username),
+                  UNIQUE KEY email (email)
+                ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3
+            ");
+
+            $install_success = true;
+            if (empty($_POST['admin_password'])) {
+                $admin_password = generateRandomPassword();
+            } else {
+                $admin_password = $_POST['admin_password'];
+            }
+            $admin_password_hash = password_hash($admin_password, PASSWORD_BCRYPT);
+
+
+
+            // Insérer admin avec id=1
+            $stmtAdmin = $pdo->prepare("INSERT INTO users (id, username, password_hash, email) VALUES (1, ?, ?, ?)");
+            $stmtAdmin->execute(['admin', $admin_password_hash, $email]);
             $install_success = true;
             if (empty($admin_password)) {
                 $admin_password = generateRandomPassword();
