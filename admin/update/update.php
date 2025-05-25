@@ -117,5 +117,5 @@ if ($zip->open($tmpZipPath) === TRUE) {
 }
 
 echo "</pre>";
-echo '<p><a href="../../../index.php">← Retourner sur le back office</a></p>';
+echo '<p><a href="../index.php?page=dashboard">← Retourner sur le back office</a></p>';
 ?>
