@@ -1,6 +1,14 @@
 // Particules
-particlesJS.load('particles-js', 'https://cdn.jsdelivr.net/gh/VincentGarreau/particles.js/demo/particles.json');
-
+fetch('assets/js/particle-config.php')
+  .then(response => response.json())
+  .then(data => {
+    if(data.file) {
+      particlesJS.load('particles-js', `assets/particles/${data.file}`);
+    } else {
+      console.error('Fichier de configuration de particules introuvable');
+    }
+  })
+  .catch(err => console.error('Erreur chargement config particules:', err));
 // Changement de texte automatique
 
 

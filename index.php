@@ -1,6 +1,10 @@
 <?php
 require_once 'tools/sqlconnect.php';
-
+$columnCheck = $pdo->query("SHOW COLUMNS FROM settings LIKE 'particle_config'")->fetch(PDO::FETCH_ASSOC);
+if (!$columnCheck) {
+    $pdo->exec("ALTER TABLE settings ADD COLUMN particle_config VARCHAR(255) DEFAULT 'default.json'");
+    $pdo->exec("UPDATE settings SET particle_config = 'default.json' WHERE id = 1");
+}
 $maintenance = $pdo->query("SELECT maintenance_status FROM settings LIMIT 1")
                    ->fetchColumn();
 
@@ -249,8 +253,15 @@ $projects = $pdo->query("SELECT * FROM projets ORDER BY ordre ASC")->fetchAll();
     <?php endif; ?>
     </p>
 </footer>
+<?php
+$keywords = $settings['keywords'] ?? ''; // Si null, on met une chaîne vide
+$phrasesArray = explode(',', $keywords);
+?>
 <script>
-    const phrases = <?= json_encode(explode(',', $settings['keywords'])) ?>;
+    let phrases = <?= json_encode(array_filter(explode(',', $settings['keywords']))) ?>;
+    if (!phrases || phrases.length === 0) {
+        phrases = [''];
+    }
 </script>
 <script src="https://platform.linkedin.com/badges/js/profile.js" async defer type="text/javascript"></script>
 <script>

@@ -10,7 +10,6 @@ if ($maintenance == 1) {
 }
 ?>
 <?php
-require_once './tools/sqlconnect.php';
 
 $id = $_GET['id'] ?? null;
 $experience = null;
@@ -23,7 +22,7 @@ if (!$id) {
     $stmt->execute([$id]);
     $experience = $stmt->fetch(PDO::FETCH_ASSOC);
 
-    if (!$experience == null) {
+    if ($experience['content'] == null) {
         $error = "La présentation n'a pas encore été rédigé.";
     }
 }

@@ -1,10 +1,9 @@
 <?php
-ini_set('display_errors', 0); // Ne pas afficher dans le navigateur
-ini_set('log_errors', 1);     // Loguer dans error_log
+ini_set('display_errors', 0);
+ini_set('log_errors', 1);
 error_reporting(E_ALL);
 
 header('Content-Type: application/json');
-
 session_start();
 require_once '../../../tools/sqlconnect.php';
 
@@ -20,26 +19,31 @@ if (!$data) {
     exit;
 }
 
-// Vérifier si la ligne id = 1 existe déjà
+// Vérification et ajout de la colonne particle_config si nécessaire
+$columnCheck = $pdo->query("SHOW COLUMNS FROM settings LIKE 'particle_config'")->fetch(PDO::FETCH_ASSOC);
+if (!$columnCheck) {
+    $pdo->exec("ALTER TABLE settings ADD COLUMN particle_config VARCHAR(255) DEFAULT 'default.json'");
+    $pdo->exec("UPDATE settings SET particle_config = 'default.json' WHERE id = 1");
+}
+
 $check = $pdo->prepare("SELECT COUNT(*) FROM settings WHERE id = 1");
 $check->execute();
 $exists = $check->fetchColumn() > 0;
+
 if (!empty($data['linkedin'])) {
-    // Exemples valides : https://linkedin.com/in/johndoe, linkedin.com/in/johndoe/, /in/johndoe
     if (preg_match('#/in/([^/?]+)#', $data['linkedin'], $matches)) {
-        $data['linkedin'] = $matches[1]; // on garde juste "johndoe"
+        $data['linkedin'] = $matches[1];
     }
 }
 if (!empty($data['github'])) {
-    // Exemples valides : https://github.com/johndoe, github.com/in/johndoe/
     if (preg_match('#.com/([^/?]+)#', $data['github'], $matches)) {
-        $data['github'] = $matches[1]; // on garde juste "johndoe"
+        $data['github'] = $matches[1];
     }
 }
-// Si elle n'existe pas, on insère une nouvelle ligne
+
 if (!$exists) {
-    $insert = $pdo->prepare("INSERT INTO settings (id, first_name, last_name, email, phone, location, linkedin, instagram, github, twitter, discord, keywords)
-        VALUES (1, :first_name, :last_name, :email, :phone, :location, :linkedin, :instagram, :github, :twitter, :discord, :keywords)");
+    $insert = $pdo->prepare("INSERT INTO settings (id, first_name, last_name, email, phone, location, linkedin, instagram, github, twitter, discord, keywords, particle_config)
+        VALUES (1, :first_name, :last_name, :email, :phone, :location, :linkedin, :instagram, :github, :twitter, :discord, :keywords, :particle_config)");
     $insert->execute([
         ':first_name' => $data['first_name'] ?? '',
         ':last_name' => $data['last_name'] ?? '',
@@ -51,10 +55,10 @@ if (!$exists) {
         ':github' => $data['github'] ?? '',
         ':twitter' => $data['twitter'] ?? '',
         ':discord' => $data['discord'] ?? '',
-        ':keywords' => is_array($data['keywords']) ? implode(',', $data['keywords']) : $data['keywords']
+        ':keywords' => is_array($data['keywords']) ? implode(',', $data['keywords']) : $data['keywords'],
+        ':particle_config' => $data['particle_config'] ?? 'default.json'
     ]);
 } else {
-    // Sinon on met à jour
     $update = $pdo->prepare("UPDATE settings SET 
         first_name = :first_name,
         last_name = :last_name,
@@ -66,7 +70,8 @@ if (!$exists) {
         github = :github,
         twitter = :twitter,
         discord = :discord,
-        keywords = :keywords
+        keywords = :keywords,
+        particle_config = :particle_config
         WHERE id = 1");
     $update->execute([
         ':first_name' => $data['first_name'] ?? '',
@@ -79,7 +84,8 @@ if (!$exists) {
         ':github' => $data['github'] ?? '',
         ':twitter' => $data['twitter'] ?? '',
         ':discord' => $data['discord'] ?? '',
-        ':keywords' => is_array($data['keywords']) ? implode(',', $data['keywords']) : $data['keywords']
+        ':keywords' => is_array($data['keywords']) ? implode(',', $data['keywords']) : $data['keywords'],
+        ':particle_config' => $data['particle_config'] ?? 'default.json'
     ]);
 }
 

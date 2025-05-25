@@ -1,0 +1,38 @@
+{
+  "particles": {
+    "number": { "value": 100 },
+    "color": { "value": ["#ff0000", "#ffa500", "#ffff00"] },
+    "shape": { "type": "star" },
+    "opacity": { "value": 0.7, "random": true },
+    "size": { "value": 5, "random": true },
+    "line_linked": { "enable": false },
+    "move": {
+      "enable": true,
+      "speed": 3,
+      "direction": "none",
+      "random": true,
+      "out_mode": "bounce"
+    },
+    "interactivity": {
+    "detect_on": "canvas",
+    "events": {
+      "onhover": {
+        "enable": true,
+        "mode": "repulse"
+      },
+      "onclick": {
+        "enable": true,
+        "mode": "remove"
+      }
+    },
+    "modes": {
+      "repulse": {
+        "distance": 100
+      },
+      "remove": {
+        "particles_nb": 10
+      }
+    }
+  }
+}
+}

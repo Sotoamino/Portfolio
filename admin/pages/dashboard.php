@@ -1,8 +1,45 @@
 <?php
 require_once '../../tools/sqlconnect.php';
+$columnCheck = $pdo->query("SHOW COLUMNS FROM settings LIKE 'particle_config'")->fetch(PDO::FETCH_ASSOC);
+if (!$columnCheck) {
+    $pdo->exec("ALTER TABLE settings ADD COLUMN particle_config VARCHAR(255) DEFAULT 'default.json'");
+    $pdo->exec("UPDATE settings SET particle_config = 'default.json' WHERE id = 1");
+}
+// --- Gestion du POST pour mise à jour des settings ---
+$particleDir = '../../assets/particles/';
+$particleFiles = [];
 
+if (is_dir($particleDir)) {
+    $files = scandir($particleDir);
+    foreach ($files as $file) {
+        if (pathinfo($file, PATHINFO_EXTENSION) === 'json') {
+            $particleFiles[] = $file;
+        }
+    }
+}
+
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['save_settings'])) {
+    // Récupérer les checkbox (envoyés uniquement si cochés)
+    $maintenance_status = isset($_POST['maintenance_status']) ? 1 : 0;
+    $github_status = isset($_POST['github_status']) ? 1 : 0;
+    $linkedin_status = isset($_POST['linkedin_status']) ? 1 : 0;
+
+    // Particle config sélectionnée
+    $particle_config = $_POST['particle_config'] ?? null;
+    if (!in_array($particle_config, $particleFiles)) {
+        $particle_config = null; // sécurité
+    }
+
+    // Mise à jour en base
+    $stmt = $pdo->prepare("UPDATE settings SET maintenance_status = ?, github_status = ?, linkedin_status = ?, particle_config = ? WHERE id = 1");
+    $stmt->execute([$maintenance_status, $github_status, $linkedin_status, $particle_config]);
+
+    // Rechargement de la page pour voir les changements
+    header("Location: " . $_SERVER['REQUEST_URI']);
+    exit;
+}
 // Récupération des paramètres
-$settings = $pdo->query("SELECT maintenance_status, github_status, linkedin_status FROM settings WHERE id = 1")->fetch(PDO::FETCH_ASSOC);
+$settings = $pdo->query("SELECT maintenance_status, github_status, linkedin_status, particle_config FROM settings WHERE id = 1")->fetch(PDO::FETCH_ASSOC);
 ?>
 <!DOCTYPE html>
 <html lang="fr">
@@ -78,6 +115,19 @@ $settings = $pdo->query("SELECT maintenance_status, github_status, linkedin_stat
     <p>
       Ce site est en cours de développement, certaines fonctionnalités peuvent être incomplètes.
     </p>
+  </div>
+
+   <div class="card">
+<label class="switch-label" for="particleConfigSelect">Configuration Particles.js</label>
+    <select id="particleConfigSelect" name="particle_config" required>
+  <?php foreach ($particleFiles as $file): 
+    $displayName = pathinfo($file, PATHINFO_FILENAME); // nom sans extension
+  ?>
+    <option value="<?= htmlspecialchars($file) ?>" <?= ($settings['particle_config'] === $file) ? 'selected' : '' ?>>
+      <?= htmlspecialchars($displayName) ?>
+    </option>
+  <?php endforeach; ?>
+</select>
   </div>
 </div>
 
