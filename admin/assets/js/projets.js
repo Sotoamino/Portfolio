@@ -1,4 +1,4 @@
-$(function () {
+function initProjets() {
   // Sauvegarde d'une expérience
   $('#projet-list').on('click', '.save', function () {
     const row = $(this).closest('tr');
@@ -78,4 +78,4 @@ $(function () {
     val = val.replace(/,\s*/g, ', ');
     $(this).val(val);
   });
-});
+};

@@ -1,7 +1,5 @@
-console.log("dashboard.js chargé");
-
 // ===== POPUP réseaux sociaux =====
-document.addEventListener('DOMContentLoaded', () => {
+function initInformations() {
   const addSocialBtn = document.getElementById('add-social');
   const popup = document.getElementById('add-social-popup');
   const closePopupBtn = document.getElementById('close-popup');
@@ -168,7 +166,7 @@ document.addEventListener('DOMContentLoaded', () => {
       });
     });
   }
-});
+};
 
 // ===== Fonctions d’extraction des liens =====
 window.extractLinkedin = function(input) {

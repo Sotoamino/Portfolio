@@ -81,7 +81,7 @@ setupToggle("githubToggle", "github_status");
 setupToggle("linkedinToggle", "linkedin_status");
 setupParticleConfigSelect();
 
-document.addEventListener('DOMContentLoaded', () => {
+function initDashboard() {
   fetch('/admin/update/check_update.php')
     .then(response => response.json())
     .then(data => {
@@ -120,4 +120,4 @@ document.addEventListener('DOMContentLoaded', () => {
         output.textContent = text;
       });
   });
-});
+};

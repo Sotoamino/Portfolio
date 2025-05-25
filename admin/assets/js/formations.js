@@ -1,4 +1,4 @@
-$(function () {
+function initFormations() {
   // Bouton "En cours" dans chaque ligne : vide la date de fin
   $('#formation-list').on('click', '.clear-endDate', function () {
     $(this).siblings('input.endDate').val('');
@@ -90,4 +90,4 @@ $(function () {
   }).on('input', function () {
     this.style.width = (this.value.length + 2) + 'ch';
   });
-});
+};

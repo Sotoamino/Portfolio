@@ -1,4 +1,4 @@
-$(function () {
+function initLangues() {
   console.log("✅ JS chargé!");
 
   // Mise à jour dynamique du niveau affiché dans la barre de progression
@@ -121,4 +121,4 @@ $(function () {
       });
     }
   });
-});
+};

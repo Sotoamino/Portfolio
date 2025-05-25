@@ -1,4 +1,4 @@
-$(function () {
+function initExperiences() {
   // Bouton "En cours" dans chaque ligne : vide la date de fin
   $('#experience-list').on('click', '.clear-endDate', function () {
     $(this).siblings('input.endDate').val('');
@@ -155,4 +155,4 @@ $(function () {
     val = val.replace(/,\s*/g, ', ');
     $(this).val(val);
   });
-});
+};

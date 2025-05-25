@@ -28,17 +28,25 @@ function loadPage(page) {
             mainContent.innerHTML = html;
 
             // Charger les scripts associés à la page
-            if (pageScripts[page]) {
-                pageScripts[page].forEach(scriptSrc => {
-                    const script = document.createElement('script');
-                    script.src = scriptSrc;
-                    script.type = 'text/javascript';
-                    script.onload = function () {
-                        console.log(`${scriptSrc} chargé !`);
-                    };
-                    document.body.appendChild(script);
-                });
+      if (pageScripts[page]) {
+        pageScripts[page].forEach(scriptSrc => {
+          const script = document.createElement('script');
+          script.src = scriptSrc;
+          script.type = 'text/javascript';
+          script.onload = function () {
+            console.log(`${scriptSrc} chargé !`);
+            // Appeler la fonction d'initialisation après le chargement du script
+            function capitalize(str) {
+              if (typeof str !== 'string') return '';
+              return str.charAt(0).toUpperCase() + str.slice(1);
             }
+            if (typeof window[`init${capitalize(page)}`] === 'function') {
+              window[`init${capitalize(page)}`]();
+            }
+          };
+          document.body.appendChild(script);
+        });
+      }
 
             // Mettre à jour l'historique de navigation
             history.pushState(null, '', `?page=${page}`);
