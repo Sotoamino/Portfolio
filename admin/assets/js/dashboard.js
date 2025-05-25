@@ -90,24 +90,20 @@ function initDashboard() {
 
     if (data.update_available) {
       updateContainer.innerHTML = `
-        <div class="card">
           <h2>Mise à jour disponible</h2>
           <p>Version actuelle : <strong>${data.current}</strong><br>
              Dernière version : <strong>${data.latest}</strong></p>
           <form method="POST" action="/admin/update/update.php">
             <button type="submit">🔄 Mettre à jour maintenant</button>
           </form>
-        </div>
       `;
     } else {
       updateContainer.innerHTML = `
-        <div class="card">
           <h2>Aucune mise à jour disponible</h2>
           <p>Version actuelle : <strong>${data.current}</strong></p>
           <form method="POST" action="/admin/update/rollback.php" style="margin-top: 1rem;">
             <button type="submit">↩️ Restaurer la dernière sauvegarde</button>
           </form>
-        </div>
       `;
     }
   })
@@ -116,13 +112,11 @@ function initDashboard() {
     const updateContainer = document.getElementById('update-gh');
     if (updateContainer) {
       updateContainer.innerHTML = `
-        <div class="card error">
           <h2>Erreur</h2>
           <p>Impossible de vérifier les mises à jour.</p>
           <form method="POST" action="/admin/update/rollback.php" style="margin-top: 1rem;">
             <button type="submit">↩️ Restaurer la dernière sauvegarde</button>
           </form>
-        </div>
       `;
     }
   });
