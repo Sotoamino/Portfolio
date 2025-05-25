@@ -83,41 +83,47 @@ setupParticleConfigSelect();
 
 function initDashboard() {
   fetch('/admin/update/check_update.php')
-    .then(response => response.json())
-    .then(data => {
-      if (data.update_available) {
-        const div = document.createElement('div');
-        div.className = 'card';
-        div.innerHTML = `
+  .then(response => response.json())
+  .then(data => {
+    const updateContainer = document.getElementById('update-gh');
+    if (!updateContainer) return;
+
+    if (data.update_available) {
+      updateContainer.innerHTML = `
+        <div class="card">
           <h2>Mise à jour disponible</h2>
           <p>Version actuelle : <strong>${data.current}</strong><br>
              Dernière version : <strong>${data.latest}</strong></p>
           <form method="POST" action="/admin/update/update.php">
             <button type="submit">🔄 Mettre à jour maintenant</button>
           </form>
-        `;
-        document.body.appendChild(div);
-      }
-    });
-
-  document.getElementById("update-btn").addEventListener("click", function () {
-    const output = document.getElementById("update-output");
-    output.textContent = "⏳ Mise à jour en cours...";
-    fetch("../../update/update.php")
-      .then(r => r.text())
-      .then(text => {
-        output.textContent = text;
-        document.getElementById("rollback-btn").style.display = "inline-block";
-      });
-  });
-
-  document.getElementById("rollback-btn").addEventListener("click", function () {
-    const output = document.getElementById("update-output");
-    output.textContent = "⏳ Restauration en cours...";
-    fetch("../../update/rollback.php")
-      .then(r => r.text())
-      .then(text => {
-        output.textContent = text;
-      });
+        </div>
+      `;
+    } else {
+      updateContainer.innerHTML = `
+        <div class="card">
+          <h2>Aucune mise à jour disponible</h2>
+          <p>Version actuelle : <strong>${data.current}</strong></p>
+          <form method="POST" action="/admin/update/rollback.php" style="margin-top: 1rem;">
+            <button type="submit">↩️ Restaurer la dernière sauvegarde</button>
+          </form>
+        </div>
+      `;
+    }
+  })
+  .catch(error => {
+    console.error('Erreur lors de la vérification des mises à jour :', error);
+    const updateContainer = document.getElementById('update-gh');
+    if (updateContainer) {
+      updateContainer.innerHTML = `
+        <div class="card error">
+          <h2>Erreur</h2>
+          <p>Impossible de vérifier les mises à jour.</p>
+          <form method="POST" action="/admin/update/rollback.php" style="margin-top: 1rem;">
+            <button type="submit">↩️ Restaurer la dernière sauvegarde</button>
+          </form>
+        </div>
+      `;
+    }
   });
 };
