@@ -13,7 +13,7 @@ if (!isset($_SESSION['user_id'])) {
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
-    <title>Back Office - salamagnon.fr</title>
+    <title>Back Office</title>
     <link rel="stylesheet" href="assets/css/admin.css">
 </head>
 <body>
