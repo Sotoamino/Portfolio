@@ -47,7 +47,6 @@ if (!isset($_SESSION['CREATED'])) {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
     <!-- CSP (Content Security Policy) minimal -->
-    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' https://code.jquery.com https://cdnjs.cloudflare.com; style-src 'self' 'unsafe-inline';">
 
     <link rel="stylesheet" href="assets/css/admin.css">
 </head>
