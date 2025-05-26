@@ -32,6 +32,11 @@ if ($zip->open($zipFile, ZipArchive::CREATE | ZipArchive::OVERWRITE) === TRUE) {
 
         if (strpos($relativePath, 'admin/update/backups') === 0) continue;
         if (strpos($relativePath, '.git') === 0) continue;
+        if (strpos($relativePath, 'install.php') === 0) continue;
+        if (strpos($relativePath, 'LICENSE') === 0) continue;
+        if (strpos($relativePath, 'Readme.md') === 0) continue;
+
+
 
         if ($file->isDir()) $zip->addEmptyDir($relativePath);
         else $zip->addFile($filePath, $relativePath);
