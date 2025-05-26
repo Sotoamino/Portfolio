@@ -70,8 +70,8 @@ if (!isset($_SESSION['CREATED'])) {
         <p>Comming soon</p>
     </main>
 
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js" integrity="sha384-H+K7U5CnXl1h5ywQ1krI6utj6rgs+0IR0DF2zjM9Us/2vFj95xG/jFJOMy+X5dUs" crossorigin="anonymous"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/Sortable/1.15.0/Sortable.min.js" integrity="sha384-9KD7UKl+wAyKXXLhK1J03KfULFuVOP3T3lFWD07RZ53zNRIv6XTEN6r8kUJXRxYZ" crossorigin="anonymous"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Sortable/1.15.0/Sortable.min.js"></script>
     <script src="assets/js/admin.js"></script>
 
 </body>
