@@ -1,7 +1,18 @@
 <?php
-ini_set('display_errors', 1);
-ini_set('display_startup_errors', 1);
-error_reporting(E_ALL);
+session_start();
+if (!isset($_SESSION['user_id'])) {
+    http_response_code(403); // ou 401
+    echo "Accès interdit.";
+    exit;
+}
+header("X-Content-Type-Options: nosniff");
+header("X-Frame-Options: SAMEORIGIN");
+header("X-XSS-Protection: 1; mode=block");
+header("Content-Type: text/html; charset=utf-8");
+ini_set('display_errors', 0);
+error_reporting(0);
+
+
 require_once '../../tools/sqlconnect.php';
 
 $stmt = $pdo->query("SELECT * FROM competences ORDER BY `ordre` ASC");

@@ -1,5 +1,16 @@
 <?php
 session_start();
+header("X-Content-Type-Options: nosniff");
+header("X-Frame-Options: SAMEORIGIN");
+header("X-XSS-Protection: 1; mode=block");
+if (!isset($_SESSION['login_attempts'])) $_SESSION['login_attempts'] = 0;
+if ($_SESSION['login_attempts'] > 10) {
+    $error = "Trop de tentatives. Réessayez plus tard.";
+    unset($_SESSION['csrf_token']);
+} else {
+    // Dans le bloc POST, en cas d'échec
+    $_SESSION['login_attempts']++;
+}
 if (empty($_SESSION['csrf_token'])) {
     $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
 }
@@ -17,6 +28,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     // Vérification du token CSRF
     if ($csrf !== $_SESSION['csrf_token']) {
         $error = "Requête invalide. Veuillez réessayer.";
+        unset($_SESSION['csrf_token']);
+
     }
     // Vérification que le nom d'utilisateur et le mot de passe ne sont pas vides
     elseif (!empty($username) && !empty($password)) {
@@ -28,11 +41,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         // Vérification que l'utilisateur existe et que le mot de passe est correct
         if ($user && password_verify($password, $user['password_hash'])) {
-            $_SESSION['user_id'] = $user['id'];  // Enregistrer l'ID de l'utilisateur en session
-            header('Location: index.php');  // Redirection vers la page d'accueil
+            session_regenerate_id(true); // <- ici
+            $_SESSION['user_id'] = $user['id'];
+            unset($_SESSION['csrf_token']); // <- aussi ici
+            header('Location: index.php');
             exit;
         } else {
             $error = "Nom d'utilisateur ou mot de passe incorrect.";
+            $_SESSION['login_attempts']++;
         }
     } else {
         $error = "Veuillez remplir tous les champs.";
