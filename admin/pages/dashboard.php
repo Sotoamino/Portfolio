@@ -61,7 +61,7 @@ $settings = $pdo->query("SELECT maintenance_status, github_status, linkedin_stat
 <div class="cards-container">
   <div class="card" id="update-gh">
     <h2>Mise à jour du site</h2>
-    <form method="POST" action="/admin/update/update.php">
+    <form method="POST" action="/admin/update/">
       <button type="submit">🔄 Mettre à jour depuis GitHub</button>
     </form>
     <form method="POST" action="/admin/update/rollback.php" style="margin-top: 1rem;">
