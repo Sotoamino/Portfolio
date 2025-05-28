@@ -1,7 +1,10 @@
 <?php
 require_once 'tools/sqlconnect.php';
 
-
+$columnCheck = $pdo->query("SHOW COLUMNS FROM settings LIKE 'licence_key'")->fetch(PDO::FETCH_ASSOC);
+if (!$columnCheck) {
+    $pdo->exec("ALTER TABLE settings ADD COLUMN licence_key VARCHAR(255) DEFAULT NULL");
+}
 
 // Récupération de la licence depuis la table settings
 $stmt = $pdo->prepare("SELECT licence_key FROM settings LIMIT 1");
@@ -15,7 +18,6 @@ if ($licenceKey) {
     $ch = curl_init('https://tools.salamagnon.fr/api/licence/validate.php');
     curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
     curl_setopt($ch, CURLOPT_POST, true);
-    curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
     curl_setopt($ch, CURLOPT_HTTPHEADER, [
         'x-api-key: ' . $licenceKey
     ]);

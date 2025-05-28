@@ -12,7 +12,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $last_name = $_POST['last_name'] ?? '';
     $email = $_POST['email'] ?? '';
     $phone = $_POST['phone'] ?? '';
-    $admin_password = $_POST['admin_password'] ?? '';
+    $licence_key = $_POST['licence_key'] ?? '';
 
     $errors = [];
     if (!$db_name || !$db_user || !$first_name || !$last_name || !$email) {
@@ -63,12 +63,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                   contact_to varchar(255) DEFAULT NULL,
                   maintenance_status tinyint(1) NOT NULL DEFAULT 0,
                   particle_config VARCHAR(255) DEFAULT 'default.json',
+                  licence_key VARCHAR(255) DEFAULT NULL,
                   PRIMARY KEY (id)
                 ) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci
             ");
 
-            $stmt = $pdo->prepare("INSERT INTO settings (id, first_name, last_name, email, phone) VALUES (1, ?, ?, ?, ?)");
-            $stmt->execute([$first_name, $last_name, $email, $phone]);
+            $stmt = $pdo->prepare("INSERT INTO settings (id, first_name, last_name, email, phone, licence_key) VALUES (1, ?, ?, ?, ?)");
+            $stmt->execute([$first_name, $last_name, $email, $phone, $licence_key]);
 
             // Création autres tables (exemples, tu peux adapter)
             $pdo->exec("DROP TABLE IF EXISTS competences");
@@ -135,29 +136,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3
             ");
 
-            // Création table users & admin
-            $pdo->exec("DROP TABLE IF EXISTS users");
-            $pdo->exec("
-                CREATE TABLE users (
-                  id int NOT NULL AUTO_INCREMENT,
-                  username varchar(100) NOT NULL,
-                  password_hash varchar(255) NOT NULL,
-                  email varchar(255) NOT NULL,
-                  PRIMARY KEY (id),
-                  UNIQUE KEY username (username),
-                  UNIQUE KEY email (email)
-                ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3
-            ");
-
             
             $install_success = true;
-            if (empty($admin_password)) {
-                $admin_password = generateRandomPassword();
-            }
-            $admin_password_hash = password_hash($admin_password, PASSWORD_BCRYPT);
-
-            $stmtAdmin = $pdo->prepare("INSERT INTO users (id, username, password_hash, email) VALUES (1, ?, ?, ?)");
-            $stmtAdmin->execute(['admin', $admin_password_hash, $email]);
 
             function recurse_copy($src, $dst) {
                 $dir = opendir($src);
@@ -260,15 +240,13 @@ button:hover { background: #0056b3; }
     <label>Téléphone
         <input type="text" name="phone" />
     </label>
-    <label>Mot de passe admin (laisser vide pour un généré aléatoirement)
-        <input type="password" name="admin_password" />
+    <label>Clé de licence
+        <input type="text" name="licence_key" />
     </label>
     <button type="submit">Installer maintenant</button>
 </form>
 <?php else: ?>
 <h2 class="success">Installation terminée avec succès !</h2>
-<p><strong>Identifiant admin :</strong> admin</p>
-<p><strong>Mot de passe admin :</strong> <code><?= htmlspecialchars($admin_password) ?></code></p>
 <p>Vous pouvez maintenant accéder à <code>/admin/</code></p>
 <?= $unlink_message ?? '' ?>
 <?php endif; ?>

@@ -19,13 +19,6 @@ if (!$data) {
     exit;
 }
 
-// Vérification et ajout de la colonne particle_config si nécessaire
-$columnCheck = $pdo->query("SHOW COLUMNS FROM settings LIKE 'particle_config'")->fetch(PDO::FETCH_ASSOC);
-if (!$columnCheck) {
-    $pdo->exec("ALTER TABLE settings ADD COLUMN particle_config VARCHAR(255) DEFAULT 'default.json'");
-    $pdo->exec("UPDATE settings SET particle_config = 'default.json' WHERE id = 1");
-}
-
 $check = $pdo->prepare("SELECT COUNT(*) FROM settings WHERE id = 1");
 $check->execute();
 $exists = $check->fetchColumn() > 0;
