@@ -1,7 +1,16 @@
 <?php
-ini_set('display_errors', 1);
-ini_set('display_startup_errors', 1);
-error_reporting(E_ALL);
+session_start();
+if (!isset($_SESSION['user_id'])) {
+    http_response_code(403); // ou 401
+    echo "Accès interdit.";
+    exit;
+}
+header("X-Content-Type-Options: nosniff");
+header("X-Frame-Options: SAMEORIGIN");
+header("X-XSS-Protection: 1; mode=block");
+header("Content-Type: text/html; charset=utf-8");
+ini_set('display_errors', 0);
+error_reporting(0);
 require_once '../../tools/sqlconnect.php';
 
 // Récupérer toutes les expériences ordonnées par 'ordre'
@@ -29,9 +38,9 @@ $projets = $stmt->fetchAll(PDO::FETCH_ASSOC);
     <?php foreach ($projets as $proj): ?>
       <tr data-id="<?= $proj['id'] ?>" class="sortable-item">
         <td class="drag-handle">⋮⋮</td>
-        <td><input type="text" class="titre" value="<?= htmlspecialchars($proj['titre']) ?>"></td>
-        <td><input type="text" class="description" value="<?= htmlspecialchars($proj['description']) ?>"></td>
-        <td><input type="text" class="link" value="<?= htmlspecialchars($proj['link']) ?>"></td>
+        <td><input type="text" class="titre" value="<?= htmlspecialchars($proj['titre'] ?? '', ENT_QUOTES, 'UTF-8') ?>"></td>
+        <td><input type="text" class="description" value="<?= htmlspecialchars($proj['description'] ?? '', ENT_QUOTES, 'UTF-8') ?>"></td>
+        <td><input type="text" class="link" value="<?= htmlspecialchars($proj['link'] ?? '', ENT_QUOTES, 'UTF-8') ?>"></td>
 
      <td>
           <button class="save">💾</button>

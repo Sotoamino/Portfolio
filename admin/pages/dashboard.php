@@ -1,4 +1,17 @@
 <?php
+session_start();
+if (!isset($_SESSION['user_id'])) {
+    http_response_code(403); // ou 401
+    echo "Accès interdit.";
+    exit;
+}
+header("X-Content-Type-Options: nosniff");
+header("X-Frame-Options: SAMEORIGIN");
+header("X-XSS-Protection: 1; mode=block");
+header("Content-Type: text/html; charset=utf-8");
+ini_set('display_errors', 0);
+error_reporting(0);
+
 require_once '../../tools/sqlconnect.php';
 $columnCheck = $pdo->query("SHOW COLUMNS FROM settings LIKE 'particle_config'")->fetch(PDO::FETCH_ASSOC);
 if (!$columnCheck) {
@@ -60,13 +73,7 @@ $settings = $pdo->query("SELECT maintenance_status, github_status, linkedin_stat
 <div id="notification"></div>
 <div class="cards-container">
   <div class="card" id="update-gh">
-    <h2>Mise à jour du site</h2>
-    <form method="POST" action="/admin/update/update.php">
-      <button type="submit">🔄 Mettre à jour depuis GitHub</button>
-    </form>
-    <form method="POST" action="/admin/update/rollback.php" style="margin-top: 1rem;">
-      <button type="submit">↩️ Restaurer la dernière sauvegarde</button>
-    </form>
+    <p>Chargement...</p>
   </div>
 
   <div class="card">
@@ -118,7 +125,7 @@ $settings = $pdo->query("SELECT maintenance_status, github_status, linkedin_stat
   </div>
 
    <div class="card">
-<label class="switch-label" for="particleConfigSelect">Configuration Particles.js</label>
+<label class="switch-label" for="particleConfigSelect">Configuration Bannière</label>
     <select id="particleConfigSelect" name="particle_config" required>
   <?php foreach ($particleFiles as $file): 
     $displayName = pathinfo($file, PATHINFO_FILENAME); // nom sans extension

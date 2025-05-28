@@ -17,27 +17,33 @@ document.addEventListener('DOMContentLoaded', function () {
     // Ajouter d'autres pages et leurs scripts ici
 };
 
-function loadPage(page) {
-    fetch(`pages/${page}.php`)
-        .then(response => {
-            if (!response.ok) throw new Error("Erreur de chargement");
-            return response.text();
-        })
-        .then(html => {
-            // Charger le contenu de la page
-            mainContent.innerHTML = html;
+function isValidPage(page) {
+  return Object.keys(pageScripts).includes(page);
+}
 
-            // Charger les scripts associés à la page
+function loadPage(page) {
+  if (!isValidPage(page)) {
+    mainContent.innerHTML = "<p>Page non autorisée.</p>";
+    return;
+  }
+  fetch(`pages/${page}.php`)
+    .then(response => {
+      if (!response.ok) throw new Error("Erreur de chargement");
+      return response.text();
+    })
+    .then(html => {
+      mainContent.innerHTML = html;
       if (pageScripts[page]) {
         pageScripts[page].forEach(scriptSrc => {
+        if (!document.querySelector(`script[src="${scriptSrc}"]`)) {
           const script = document.createElement('script');
           script.src = scriptSrc;
           script.type = 'text/javascript';
           script.onload = function () {
-            console.log(`${scriptSrc} chargé !`);
-            // Appeler la fonction d'initialisation après le chargement du script
-            function capitalize(str) {
-              if (typeof str !== 'string') return '';
+          console.log(`${scriptSrc} chargé !`);
+          // Appeler la fonction d'initialisation après le chargement du script
+          function capitalize(str) {
+            if (typeof str !== 'string') return '';
               return str.charAt(0).toUpperCase() + str.slice(1);
             }
             if (typeof window[`init${capitalize(page)}`] === 'function') {
@@ -45,16 +51,15 @@ function loadPage(page) {
             }
           };
           document.body.appendChild(script);
-        });
-      }
-
-            // Mettre à jour l'historique de navigation
-            history.pushState(null, '', `?page=${page}`);
-        })
-        .catch(error => {
-            mainContent.innerHTML = "<p>Erreur lors du chargement.</p>";
-            console.error(error);
-        });
+        }
+      });
+    }
+    history.pushState(null, '', `?page=${page}`);
+  })
+  .catch(error => {
+    mainContent.innerHTML = "<p>Erreur lors du chargement.</p>";
+    console.error(error);
+  });
 }
 
   // Fonction pour attacher les événements
