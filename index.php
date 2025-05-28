@@ -179,6 +179,11 @@ $projects = $pdo->query("SELECT * FROM projets ORDER BY ordre ASC")->fetchAll();
         <div class="card">
             <h3><?= htmlspecialchars($proj['titre']) ?></h3>
             <p><?= htmlspecialchars($proj['description']) ?></p>
+            <?php if (!empty($proj['link'])): ?>
+                <button class="view-missions-btn" onclick="window.open('<?= $proj['link'] ?>', 'projetPopup', 'width=800,height=600,resizable=yes,scrollbars=yes')">
+                    Découvrir le projet
+                </button>
+            <?php endif; ?>
         </div>
     <?php endforeach; ?>
 	</section>
