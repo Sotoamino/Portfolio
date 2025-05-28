@@ -1,6 +1,37 @@
 <?php
 require_once 'tools/sqlconnect.php';
 
+
+
+// Récupération de la licence depuis la table settings
+$stmt = $pdo->prepare("SELECT licence_key FROM settings LIMIT 1");
+$stmt->execute();
+$licenceKey = $stmt->fetchColumn();
+
+$licence_valid = false;
+
+if ($licenceKey) {
+    // Appel de l'API de validation
+    $ch = curl_init('https://tools.salamagnon.fr/api/licence/validate.php');
+    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+    curl_setopt($ch, CURLOPT_POST, true);
+    curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+    curl_setopt($ch, CURLOPT_HTTPHEADER, [
+        'x-api-key: ' . $licenceKey
+    ]);
+    curl_setopt($ch, CURLOPT_TIMEOUT, 5);
+
+    $response = curl_exec($ch);
+    $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+    curl_close($ch);
+    if ($httpCode === 200 && $response) {
+        $data = json_decode($response, true);
+        if (isset($data['success']) && $data['success'] === true) {
+            $licence_valid = true;
+        }
+    }
+}
+
 $maintenance = $pdo->query("SELECT maintenance_status FROM settings LIMIT 1")
                    ->fetchColumn();
 
@@ -38,6 +69,29 @@ $projects = $pdo->query("SELECT * FROM projets ORDER BY ordre ASC")->fetchAll();
     <script src="https://cdn.jsdelivr.net/npm/particles.js@2.0.0/particles.min.js"></script>
 </head>
 <body>
+    <?php if (!$licence_valid): ?>
+    <div style="
+        background-color: #ffcc00;
+        color: #000;
+        text-align: center;
+        padding: 10px 0;
+        font-weight: bold;
+        font-family: Arial, sans-serif;
+        position: fixed;
+        top: 0;
+        width: 100%;
+        z-index: 9999;
+        box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    ">
+        Ce site fonctionne sans licence valide. Pour en obtenir une, consultez <a href="https://tools.salamagnon.fr/" target="_blank" style="color: #000; text-decoration: underline;">tools.salamagnon.fr</a>.
+    </div>
+    <style>
+        /* Pour ne pas que le contenu soit caché sous le bandeau */
+        body {
+            padding-top: 50px;
+        }
+    </style>
+<?php endif; ?>
 <nav>
   <div class="nav-header">
     <a href="#">Accueil</a>
