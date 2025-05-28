@@ -93,7 +93,7 @@ function initDashboard() {
           <h2>Mise à jour disponible</h2>
           <p>Version actuelle : <strong>${data.current}</strong><br>
              Dernière version : <strong>${data.latest}</strong></p>
-          <form method="POST" action="/admin/update/">
+          <form method="POST" action="/admin/update/update.js">
             <button type="submit">🔄 Mettre à jour maintenant</button>
           </form>
       `;
