@@ -68,7 +68,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 ) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci
             ");
 
-            $stmt = $pdo->prepare("INSERT INTO settings (id, first_name, last_name, email, phone, licence_key) VALUES (1, ?, ?, ?, ?)");
+            $stmt = $pdo->prepare("INSERT INTO settings (id, first_name, last_name, email, phone, licence_key) VALUES (1, ?, ?, ?, ?, ?)");
             $stmt->execute([$first_name, $last_name, $email, $phone, $licence_key]);
 
             // Création autres tables (exemples, tu peux adapter)
