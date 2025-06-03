@@ -77,7 +77,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     }
                 }
                 elseif($httpCode === 400 && $response) {
-                        $error = $data['message'] ?? "Nom d'utilisateur ou mot de passe incorrect.";
+                    $error = $data['message'] ?? "Nom d'utilisateur ou mot de passe incorrect.";
+                }
+                elseif($httpCode === 401 && $response) {
+                    $error = $data['message'] ?? "Nom d'utilisateur ou mot de passe incorrect.";
                 }
                  else {
                     $data = json_decode($response, true);
