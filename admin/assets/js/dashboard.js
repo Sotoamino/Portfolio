@@ -115,18 +115,6 @@ function setupThemeSelect() {
   if (select) {
     select.addEventListener('change', function () {
       const theme = this.value;
-      let link = document.getElementById('theme-stylesheet');
-
-      if (link) {
-        link.href = `assets/css/themes/${theme}.css`;
-      } else {
-        link = document.createElement('link');
-        link.rel = 'stylesheet';
-        link.id = 'theme-stylesheet';
-        link.href = `assets/css/themes/${theme}.css`;
-        document.head.appendChild(link);
-      }
-
       showNotification(`Thème "${theme}" appliqué`);
       saveSettingToDatabase('theme', theme); // Sauvegarde en BDD
     });
