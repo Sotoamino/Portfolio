@@ -1,0 +1,12 @@
+:root {
+  --font-body: 'Roboto', sans-serif;
+
+  /* Autres styles communs */
+  --radius-small: 0.5rem;
+  --radius-large: 1rem;
+
+  --shadow-card: 0 4px 8px rgba(0, 0, 0, 0.1);
+  --transition: 0.3s ease;
+
+  --color-text : #333
+}

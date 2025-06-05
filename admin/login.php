@@ -76,16 +76,19 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         exit;
                     }
                 }
-                elseif($httpCode === 400 && $response) {
+                elseif ($httpCode === 400 && $response) {
                     $error = $data['message'] ?? "Nom d'utilisateur ou mot de passe incorrect.";
                 }
-                elseif($httpCode === 401 && $response) {
+                elseif ($httpCode === 401 && $response) {
                     $error = $data['message'] ?? "Nom d'utilisateur ou mot de passe incorrect.";
+                }
+                elseif ($httpCode === 403 && $response) {
+                    $error = $data['message'] ?? "Vous n'êtes pas autorisé à vous connecter.";
                 }
                  else {
                     $data = json_decode($response, true);
                     $error = "Erreur de communication avec le serveur d’authentification.";
-
+                    exit;
                 }
 
             } else {

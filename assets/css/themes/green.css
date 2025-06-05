@@ -1,0 +1,38 @@
+:root {
+  --color-bg: #f3fef6;
+  --color-heading: #134e4a;
+  --color-white: #ffffff;
+
+  --color-header-bg: #064e3b;
+  --color-nav-bg: #065f46;
+  --color-footer-bg: #064e3b;
+
+  --color-button-bg: #10b981;
+  --color-button-hover: #059669;
+
+  --color-card-bg: #ffffff;
+  --color-card-border: #cbd5c0;
+  --color-card-title: #134e4a;
+  --color-card-text: #475f55;
+
+  --color-tag-bg: #d1fae5;
+  --color-tag-text: #065f46;
+
+  --color-form-border: #9ca3af;
+
+  --color-success-bg: #34d399;
+
+  --color-accordion-bg: #10b981;
+  --color-accordion-hover: #059669;
+  --color-panel-bg: #f0fdf4;
+
+  --color-progress-bg: #d1fae5;
+  --color-progress-fill: #10b981;
+
+  --color-github-bg: #102a24;
+  --color-github-header: #134e4a;
+  --color-github-border: #15803d;
+  --color-github-primary: #d1fae5;
+  --color-github-secondary: #86efac;
+  --color-github-hover: #064e3b;
+}

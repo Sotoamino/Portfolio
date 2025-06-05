@@ -11,7 +11,6 @@ header("X-XSS-Protection: 1; mode=block");
 header("Content-Type: text/html; charset=utf-8");
 ini_set('display_errors', 0);
 error_reporting(0);
-
 require_once '../../tools/sqlconnect.php';
 $columnCheck = $pdo->query("SHOW COLUMNS FROM settings LIKE 'particle_config'")->fetch(PDO::FETCH_ASSOC);
 if (!$columnCheck) {
@@ -52,7 +51,20 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['save_settings'])) {
     exit;
 }
 // Récupération des paramètres
-$settings = $pdo->query("SELECT maintenance_status, github_status, linkedin_status, particle_config FROM settings WHERE id = 1")->fetch(PDO::FETCH_ASSOC);
+$settings = $pdo->query("SELECT maintenance_status, github_status, linkedin_status, particle_config, theme FROM settings WHERE id = 1")->fetch(PDO::FETCH_ASSOC);
+
+
+$themeDir = '../../assets/css/themes/';
+$themeFiles = [];
+
+if (is_dir($themeDir)) {
+    $files = scandir($themeDir);
+    foreach ($files as $file) {
+        if (pathinfo($file, PATHINFO_EXTENSION) === 'css' && $file !== 'base.css') {
+            $themeFiles[] = $file;
+        }
+    }
+}
 ?>
 <!DOCTYPE html>
 <html lang="fr">
@@ -78,9 +90,21 @@ $settings = $pdo->query("SELECT maintenance_status, github_status, linkedin_stat
 
   <div class="card">
     <h2>Importer un CV</h2>
-    <form id="uploadForm" class="cv-upload-form" enctype="multipart/form-data" method="POST" action="upload_cv.php">
+    <form id="uploadFormCV" class="cv-upload-form" enctype="multipart/form-data" method="POST" action="upload_cv.php">
       <label for="cv">Fichier PDF uniquement :</label>
       <input type="file" name="cv" id="cv" accept="application/pdf" required />
+      <button type="submit">Envoyer</button>
+    </form>
+  </div>
+
+    <div class="card">
+    <h2>Sélectionner un Favicon</h2>
+    <? if (file_exists('../../assets/images/favicon.ico')) { ?>
+      <img src="../../assets/images/favicon.ico" alt="Favicon" style="width: 32px; height: 32px; margin-left: 10px;" />
+  <? } ?>
+    <form id="uploadFormFavicon" class="cv-upload-form" enctype="multipart/form-data" method="POST" action="upload_favicon.php">
+      <label for="favicon">Fichier image (jpg/png) uniquement :</label>
+      <input type="file" name="favicon" id="favicon" accept="image/png,image/jpeg" required />
       <button type="submit">Envoyer</button>
     </form>
   </div>
@@ -125,17 +149,38 @@ $settings = $pdo->query("SELECT maintenance_status, github_status, linkedin_stat
   </div>
 
    <div class="card">
-<label class="switch-label" for="particleConfigSelect">Configuration Bannière</label>
-    <select id="particleConfigSelect" name="particle_config" required>
-  <?php foreach ($particleFiles as $file): 
-    $displayName = pathinfo($file, PATHINFO_FILENAME); // nom sans extension
-  ?>
-    <option value="<?= htmlspecialchars($file) ?>" <?= ($settings['particle_config'] === $file) ? 'selected' : '' ?>>
-      <?= htmlspecialchars($displayName) ?>
-    </option>
-  <?php endforeach; ?>
-</select>
-  </div>
+    <h2>Style du site</h2>
+    <label class="switch-label" for="particleConfigSelect">Bannière</label>
+        <select id="particleConfigSelect" name="particle_config" required>
+      <?php foreach ($particleFiles as $file): 
+        $displayName = pathinfo($file, PATHINFO_FILENAME); // nom sans extension
+      ?>
+        <option value="<?= htmlspecialchars($file) ?>" <?= ($settings['particle_config'] === $file) ? 'selected' : '' ?>>
+          <?= htmlspecialchars($displayName) ?>
+        </option>
+      <?php endforeach; ?>
+    </select>
+    <br/><br/>
+  <label class="switch-label" for="themeSelect">Thème</label>
+  <select id="themeSelect" name="theme">
+    <?php
+    $themeDir = '../../assets/css/themes/';
+    $themeFiles = [];
+    if (is_dir($themeDir)) {
+        $files = scandir($themeDir);
+        foreach ($files as $file) {
+            if (pathinfo($file, PATHINFO_EXTENSION) === 'css' && $file !== 'base.css') {
+                $themeName = pathinfo($file, PATHINFO_FILENAME);
+                $selected = ($settings['theme'] === $themeName) ? 'selected' : '';
+                echo "<option value=\"" . htmlspecialchars($themeName) . "\" $selected>" . htmlspecialchars(ucfirst($themeName)) . "</option>";
+            }
+        }
+    }
+    ?>
+  </select>
+</div>
+
+
 </div>
 
 </body>

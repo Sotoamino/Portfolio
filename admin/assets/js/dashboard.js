@@ -46,7 +46,7 @@ function setupParticleConfigSelect() {
   }
 }
 
-uploadForm.addEventListener('submit', async (e) => {
+uploadFormCV.addEventListener('submit', async (e) => {
   e.preventDefault();
 
   const fileInput = document.getElementById('cv');
@@ -59,7 +59,7 @@ uploadForm.addEventListener('submit', async (e) => {
   formData.append('cv', fileInput.files[0]);
 
   try {
-    const response = await fetch('../admin/actions/cv/upload_cv.php', {
+    const response = await fetch('../admin/actions/settings/upload_cv.php', {
       method: 'POST',
       body: formData
     });
@@ -67,7 +67,7 @@ uploadForm.addEventListener('submit', async (e) => {
 
     if (result.success) {
       showNotification(result.message, 'success');
-      uploadForm.reset();
+      uploadFormCV.reset();
     } else {
       showNotification(result.message, 'error');
     }
@@ -76,10 +76,69 @@ uploadForm.addEventListener('submit', async (e) => {
   }
 });
 
+const uploadFormFavicon = document.getElementById('uploadFormFavicon');
+
+if (uploadFormFavicon) {
+  uploadFormFavicon.addEventListener('submit', async (e) => {
+    e.preventDefault();
+
+    const fileInput = document.getElementById('favicon');
+    if (!fileInput.files.length) {
+      showNotification('Veuillez sélectionner un fichier image.', 'error');
+      return;
+    }
+
+    const formData = new FormData();
+    formData.append('favicon', fileInput.files[0]); // ✅ clé correcte
+
+    try {
+      const response = await fetch('../admin/actions/settings/upload_favicon.php', {
+        method: 'POST',
+        body: formData
+      });
+      const result = await response.json();
+
+      if (result.success) {
+        showNotification(result.message, 'success');
+        uploadFormFavicon.reset();
+      } else {
+        showNotification(result.message, 'error');
+      }
+    } catch (err) {
+      showNotification('Erreur réseau ou serveur.', 'error');
+    }
+  });
+}
+
+function setupThemeSelect() {
+  const select = document.getElementById('themeSelect');
+  if (select) {
+    select.addEventListener('change', function () {
+      const theme = this.value;
+      let link = document.getElementById('theme-stylesheet');
+
+      if (link) {
+        link.href = `assets/css/themes/${theme}.css`;
+      } else {
+        link = document.createElement('link');
+        link.rel = 'stylesheet';
+        link.id = 'theme-stylesheet';
+        link.href = `assets/css/themes/${theme}.css`;
+        document.head.appendChild(link);
+      }
+
+      showNotification(`Thème "${theme}" appliqué`);
+      saveSettingToDatabase('theme', theme); // Sauvegarde en BDD
+    });
+  }
+}
+
 setupToggle("maintenanceToggle", "maintenance_status");
 setupToggle("githubToggle", "github_status");
 setupToggle("linkedinToggle", "linkedin_status");
 setupParticleConfigSelect();
+setupThemeSelect(); // Appel de la fonction
+
 
 function initDashboard() {
   fetch('/admin/update/check_update.php')

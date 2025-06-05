@@ -1,27 +1,27 @@
 /* === BASE === */
 body {
   margin: 0;
-  font-family: 'Roboto', sans-serif;
-  background: #f5f7fa;
-  color: #333;
+  font-family: var(--font-body);
+  background: var(--color-bg);
+  color: var(--color-text);
   overflow-x: hidden;
   scroll-behavior: smooth;
 }
 
 h2 {
   margin-bottom: 2rem;
-  color: #1f2937;
+  color: var(--color-heading);
 }
 
 /* === HEADER === */
 header {
   position: relative;
   height: 55vh;
-  background-color: #0f172a;
+  background-color: var(--color-header-bg);
   display: flex;
   align-items: center;
   justify-content: center;
-  color: white;
+  color: var(--color-white);
   overflow: hidden;
 }
 
@@ -66,7 +66,7 @@ nav {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  background: #1f2937;
+  background: var(--color-nav-bg);
   padding: 1rem 2rem;
   position: sticky;
   top: 0;
@@ -83,7 +83,7 @@ nav ul {
 }
 
 nav a {
-  color: white;
+  color: var(--color-white);
   text-decoration: none;
 }
 
@@ -94,14 +94,14 @@ section {
   margin: auto;
 }
 
-/* === CARD (Général) === */
+/* === CARD === */
 .card {
-  background: white;
+  background: var(--color-card-bg);
   padding: 2rem;
   border-radius: 1rem;
   box-shadow: 0 4px 8px rgba(0,0,0,0.1);
   margin-bottom: 2rem;
-  border: 1px solid #ddd;
+  border: 1px solid var(--color-card-border);
   transition: transform 0.3s ease;
 }
 
@@ -112,12 +112,12 @@ section {
 .card h3 {
   margin-top: 0;
   font-size: 1.125rem;
-  color: #333;
+  color: var(--color-card-title);
 }
 
 .card p {
   margin: 0.5rem 0;
-  color: #666;
+  color: var(--color-card-text);
 }
 
 /* === EXPERIENCE === */
@@ -131,8 +131,8 @@ section {
 
 .tag {
   display: inline-block;
-  background: #e0f7fa;
-  color: #00796b;
+  background: var(--color-tag-bg);
+  color: var(--color-tag-text);
   padding: 0.25rem 0.625rem;
   border-radius: 20px;
   font-size: 0.8125rem;
@@ -143,10 +143,10 @@ section {
 button,
 .view-missions-btn,
 .download-btn {
-  display: inline-flex;
+    display: inline-flex;
   align-items: center;
   justify-content: center;
-  background: #3b82f6;
+  background: var(--color-button-bg);
   color: white;
   border: none;
   border-radius: 0.5rem;
@@ -160,7 +160,7 @@ button,
 button:hover,
 .view-missions-btn:hover,
 .download-btn:hover {
-  background: #2563eb;
+  background: var(--color-button-hover);
 }
 
 .view-missions-btn {
@@ -173,9 +173,9 @@ button:hover,
 
 /* === ACCORDÉON === */
 .accordion {
-  background: #3b82f6;
-  color: white;
-  border: none;
+  background: var(--color-accordion-bg);
+  color: var(--color-white);
+   border: none;
   padding: 10px;
   margin-top: 1rem;
   width: 100%;
@@ -187,21 +187,21 @@ button:hover,
 }
 
 .accordion:hover {
-  background: #2563eb;
+  background: var(--color-accordion-hover);
 }
 
 .panel {
   display: none;
-  background: #f9f9f9;
+  background: var(--color-panel-bg);
   padding: 0.5rem 1rem;
-  border-left: 3px solid #3b82f6;
+  border-left: 3px solid var(--color-button-bg);
   margin-top: 0.5rem;
   border-radius: 0 0 0.5rem 0.5rem;
 }
 
 /* === PROGRESS BAR === */
 .progress {
-  background: #e5e7eb;
+  background: var(--color-progress-bg);
   border-radius: 1rem;
   margin-bottom: 1rem;
   overflow: hidden;
@@ -209,10 +209,10 @@ button:hover,
 
 .progress div {
   height: 1.5rem;
-  background: #3b82f6;
+  background: var(--color-progress-fill);
   text-align: right;
   padding-right: 0.5rem;
-  color: white;
+  color: var(--color-white);
   line-height: 1.5rem;
   width: 0;
   transition: width 2s ease;
@@ -242,7 +242,7 @@ form textarea {
   width: 100%;
   padding: 1rem;
   margin-bottom: 1rem;
-  border: 1px solid #ccc;
+  border: 1px solid var(--color-form-border);
   border-radius: 0.5rem;
   font-size: 1rem;
 }
@@ -257,13 +257,13 @@ form button {
   display: none;
   padding: 1rem;
   margin-top: 1rem;
-  background: #10b981;
-  color: white;
+  background: var(--color-success-bg);
+  color: var(--color-white);
   border-radius: 0.5rem;
   text-align: center;
 }
 
-/* === LIENS UTILES & CV === */
+
 #usefull-links {
   padding: 20px;
 }
@@ -395,11 +395,11 @@ form button {
 }
 
 footer {
-    background: #1f2937;
-    color: white;
-    text-align: center;
-    padding: 2rem;
-    margin-top: 4rem;
+  background: var(--color-footer-bg);
+  color: var(--color-white);
+  text-align: center;
+  padding: 2rem;
+  margin-top: 4rem;
 }
 
 .github-badge {

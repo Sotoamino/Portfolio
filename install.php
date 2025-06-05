@@ -63,6 +63,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                   contact_to varchar(255) DEFAULT NULL,
                   maintenance_status tinyint(1) NOT NULL DEFAULT 0,
                   particle_config VARCHAR(255) DEFAULT 'default.json',
+                  theme VARCHAR(255) DEFAULT 'blue',
                   licence_key VARCHAR(255) DEFAULT NULL,
                   PRIMARY KEY (id)
                 ) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci

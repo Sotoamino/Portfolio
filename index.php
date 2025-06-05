@@ -1,9 +1,9 @@
 <?php
 require_once 'tools/sqlconnect.php';
 
-$columnCheck = $pdo->query("SHOW COLUMNS FROM settings LIKE 'licence_key'")->fetch(PDO::FETCH_ASSOC);
+$columnCheck = $pdo->query("SHOW COLUMNS FROM settings LIKE 'theme'")->fetch(PDO::FETCH_ASSOC);
 if (!$columnCheck) {
-    $pdo->exec("ALTER TABLE settings ADD COLUMN licence_key VARCHAR(255) DEFAULT NULL");
+    $pdo->exec("ALTER TABLE settings ADD COLUMN theme VARCHAR(255) DEFAULT 'blue'");
 }
 
 // Récupération de la licence depuis la table settings
@@ -65,9 +65,11 @@ $projects = $pdo->query("SELECT * FROM projets ORDER BY ordre ASC")->fetchAll();
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title><?= htmlspecialchars($settings['first_name']) ?> <?= htmlspecialchars($settings['last_name']) ?></title>
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="assets/css/themes/base.css">
+    <link rel="stylesheet" href="assets/css/themes/<?= htmlspecialchars($settings['theme']) ?>.css">
     <link rel="stylesheet" href="assets/css/style.css">
 	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
-	<link rel="icon" type="image/x-icon" href="/images/favicon.ico">
+	<link rel="icon" type="image/x-icon" href="assets/images/favicon.ico">
     <script src="https://cdn.jsdelivr.net/npm/particles.js@2.0.0/particles.min.js"></script>
 </head>
 <body>
