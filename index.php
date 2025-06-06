@@ -5,7 +5,14 @@ $columnCheck = $pdo->query("SHOW COLUMNS FROM settings LIKE 'theme'")->fetch(PDO
 if (!$columnCheck) {
     $pdo->exec("ALTER TABLE settings ADD COLUMN theme VARCHAR(255) DEFAULT 'blue'");
 }
-
+$columnCheck = $pdo->query("SHOW COLUMNS FROM settings LIKE 'skill_display'")->fetch(PDO::FETCH_ASSOC);
+if (!$columnCheck) {
+    $pdo->exec("ALTER TABLE settings ADD COLUMN skill_display VARCHAR(255) DEFAULT 'progress_bar'");
+}
+$columnCheck = $pdo->query("SHOW COLUMNS FROM settings LIKE 'lang_display'")->fetch(PDO::FETCH_ASSOC);
+if (!$columnCheck) {
+    $pdo->exec("ALTER TABLE settings ADD COLUMN lang_display VARCHAR(255) DEFAULT 'progress_bar'");
+}
 // Récupération de la licence depuis la table settings
 $stmt = $pdo->prepare("SELECT licence_key FROM settings LIMIT 1");
 $stmt->execute();
@@ -45,6 +52,7 @@ if ($maintenance == 1) {
 
 <?php
 require './tools/sqlconnect.php';
+require './include/internal/skills-lang.php';
 session_start();
 if (empty($_SESSION['csrf_token'])) {
     $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
@@ -140,35 +148,14 @@ $projects = $pdo->query("SELECT * FROM projets ORDER BY ordre ASC")->fetchAll();
     </a>
 </div>
 
-<?php if (!empty($skills)): ?>
-<section id="skills">
-    <h2>Compétences</h2>
-    <div class="card">
-<?php foreach ($skills as $skill): ?>
-    <div class="progress">
-        <div class="progress-bar" data-percent="<?= htmlspecialchars($skill['niveau']) . "%" ?>">
-        <span class="skill-name"><?= htmlspecialchars($skill['nom']) ?></span>
-			</div>
-    </div>
-<?php endforeach; ?>
-</section>
-<?php endif; ?>
-
-<?php if (!empty($langues)): ?>
-<section id="langues">
-    </div>
-    <h2>Langues</h2>
-    <div class="card">
-        <?php foreach ($langues as $langue): ?>
-            <div class="progress">				
-				<div class="progress-bar" data-percent="<?= htmlspecialchars($langue['niveau']) . "%" ?>">
-        <span class="skill-name"><?= htmlspecialchars($langue['nom']) ?></span>
-			</div>
-            </div>
-        <?php endforeach; ?>
-    </div>
-</section>
-<?php endif; ?>
+<?php
+	if (!empty($skills)) {
+    	progress_bar("Compétences",$skills, "skills");
+	};
+	if (!empty($langues)) {
+    	progress_bar("Langues",$langues, "langues");
+	};
+?>
 
 <?php if (!empty($experiences)): ?>
 <section id="experience">
@@ -177,9 +164,9 @@ $projects = $pdo->query("SELECT * FROM projets ORDER BY ordre ASC")->fetchAll();
         <div class="card">
             <h3><?= htmlspecialchars($exp['entreprise']) ?> - <?= htmlspecialchars($exp['titre']) ?></h3>
             <?php
-            $start = date('d/m/Y', strtotime($exp['startDate']));
+            $start = date('m/Y', strtotime($exp['startDate']));
             $endDateValid = !empty($exp['endDate']) && date('d/m/Y', strtotime($exp['endDate'])) !== '30/11/-0001';
-            $end = $endDateValid ? date('d/m/Y', strtotime($exp['endDate'])) : 'En cours';
+            $end = $endDateValid ? date('m/Y', strtotime($exp['endDate'])) : 'En cours';
             ?>
             <p><?= $start ?> - <?= $end ?></p>
 
@@ -212,9 +199,9 @@ $projects = $pdo->query("SELECT * FROM projets ORDER BY ordre ASC")->fetchAll();
         <div class="card">
             <h3><?= htmlspecialchars($forma['name']) ?> - <?= htmlspecialchars($forma['titre']) ?></h3>
             <?php
-            $start = date('d/m/Y', strtotime($forma['startDate']));
+            $start = date('m/Y', strtotime($forma['startDate']));
             $endDateValid = !empty($forma['endDate']) && date('d/m/Y', strtotime($exp['endDate'])) !== '30/11/-0001';
-            $end = $endDateValid ? date('d/m/Y', strtotime($forma['endDate'])) : 'En cours';
+            $end = $endDateValid ? date('m/Y', strtotime($forma['endDate'])) : 'En cours';
             ?>
             <p><?= $start ?> - <?= $end ?></p>
 
@@ -240,23 +227,6 @@ $projects = $pdo->query("SELECT * FROM projets ORDER BY ordre ASC")->fetchAll();
             <?php endif; ?>
         </div>
     <?php endforeach; ?>
-	</section>
-<?php endif; ?>
-<?php if (!empty($settings['contact_api_key'])): ?>
-	<section id="contact">
-    <h2>Contact</h2>
-    <div class="card">
-        <p style="font-weight: bold; margin-bottom: 1rem;">Pour me contacter :</p>
-        <form id="contactForm" action="contact.php" method="POST">
-            <input type="hidden" name="csrf_token" value="<?php echo $_SESSION['csrf_token']; ?>">
-            <input type="text" name="nom" placeholder="Votre nom" required>
-            <input type="email" name="email" placeholder="Votre email" required>
-            <input type="text" name="entreprise" placeholder="Votre entreprise" required>
-            <textarea name="message" placeholder="Votre message" required></textarea>
-            <button type="submit">Envoyer</button>
-        </form>
-        <div id="message">Message envoyé avec succès !</div>
-    </div>
 	</section>
 <?php endif; ?>
   <?php if (

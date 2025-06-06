@@ -494,3 +494,26 @@ footer {
     max-width: 500px;
   }
 }
+
+    #container {
+      position: relative;
+      width: 800px;
+      height: 500px;
+      background: radial-gradient(circle, #0b1d2a 60%, #071521 100%);
+      overflow: hidden;
+    }
+
+    .mot {
+      position: absolute;
+      padding: 10px 20px;
+      border-radius: 5px;
+      font-weight: bold;
+      white-space: nowrap;
+      color: white;
+    }
+
+    /* Couleurs par thème */
+    .blue { background: #2166f2; }
+    .green { background: #33a852; }
+    .red { background: #d62d2d; }
+    .yellow { background: #f4b400; }

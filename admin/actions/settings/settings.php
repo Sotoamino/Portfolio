@@ -41,6 +41,8 @@ if ($name === 'particle_config') {
         http_response_code(400);
         echo json_encode(['success' => false, 'message' => 'Valeur particle_config invalide']);
         exit;
+    } else {
+        echo json_encode(['success' => true, 'message' => 'Configuration de la bannière modifié en '.$value]);
     }
 }	else if ($name === 'theme') {
 	 $particleDir = '../../../assets/css/themes/';
@@ -53,18 +55,20 @@ if ($name === 'particle_config') {
             }
         }
     }
-    if (!in_array($value, $validParticles)) {
+    if (!in_array($value.'.css', $validParticles)) {
         http_response_code(400);
         echo json_encode(['success' => false, 'message' => 'Valeur theme invalide']);
         exit;
+    } else {
+        echo json_encode(['success' => true, 'message' => 'Thème modifié en : '.$value]);
     }
 }
 
 else {
     // Pour les toggles, cast en int (0 ou 1)
     $value = (int)$value;
+    echo json_encode(['success' => true]);
 }
 
 $stmt = $pdo->prepare("UPDATE settings SET `$name` = :value WHERE id = 1");
 $stmt->execute(['value' => $value]);
-echo json_encode(['success' => true]);
