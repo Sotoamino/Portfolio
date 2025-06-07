@@ -14,7 +14,6 @@ $name = trim($data['name'] ?? '');
 $startDate = !empty($data['startDate']) ? $data['startDate'] : null;
 $endDate = isset($data['endDate']) && $data['endDate'] !== '' ? $data['endDate'] : null;
 $link = trim($data['link'] ?? '');
-$description = trim($data['description'] ?? '');
 
 if ($titre === '' || $name === '') {
     echo json_encode(['success' => false, 'message' => 'Titre et etablissement obligatoires']);
@@ -26,8 +25,8 @@ $maxOrdre = $pdo->query("SELECT MAX(ordre) FROM formations")->fetchColumn();
 $maxOrdre = $maxOrdre !== false ? (int)$maxOrdre + 1 : 0;
 
 try {
-    $stmt = $pdo->prepare("INSERT INTO formations (titre, name, startDate, endDate, link, description, ordre) VALUES (?, ?, ?, ?, ?, ?, ?)");
-    $stmt->execute([$titre, $name, $startDate, $endDate, $link, $description, $maxOrdre]);
+    $stmt = $pdo->prepare("INSERT INTO formations (titre, name, startDate, endDate, link, ordre) VALUES (?, ?, ?, ?, ?, ?, ?)");
+    $stmt->execute([$titre, $name, $startDate, $endDate, $link, $maxOrdre]);
     $id = $pdo->lastInsertId();
     echo json_encode(['success' => true, 'message' => 'Formation ajoutée', 'id' => $id]);
 } catch (Exception $e) {
