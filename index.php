@@ -13,6 +13,31 @@ $columnCheck = $pdo->query("SHOW COLUMNS FROM settings LIKE 'lang_display'")->fe
 if (!$columnCheck) {
     $pdo->exec("ALTER TABLE settings ADD COLUMN lang_display VARCHAR(255) DEFAULT 'progress_bar'");
 }
+
+$column = $pdo->query("SHOW COLUMNS FROM experiences LIKE 'content'")->fetch(PDO::FETCH_ASSOC);
+$isNullable = $column['Null'] === 'YES';
+$defaultIsNull = is_null($column['Default']);
+if (!$isNullable || !$defaultIsNull) {
+    // La colonne existe mais n'est pas bien configurée → on modifie
+    $type = $column['Type'];
+    $pdo->exec("ALTER TABLE `experiences` MODIFY `content` $type DEFAULT NULL");
+}
+
+$column = $pdo->query("SHOW COLUMNS FROM projets LIKE 'description'")->fetch(PDO::FETCH_ASSOC);
+$isNullable = $column['Null'] === 'YES';
+$defaultIsNull = is_null($column['Default']);
+if (!$isNullable || !$defaultIsNull) {
+    // La colonne existe mais n'est pas bien configurée → on modifie
+    $type = $column['Type'];
+    $pdo->exec("ALTER TABLE `projets` MODIFY `description` $type DEFAULT NULL");
+}
+
+$columnCheck = $pdo->query("SHOW COLUMNS FROM `formations` LIKE 'description'")->fetch(PDO::FETCH_ASSOC);
+
+if ($columnCheck) {
+    $pdo->exec("ALTER TABLE `formations` DROP COLUMN `description`");
+}
+
 // Récupération de la licence depuis la table settings
 $stmt = $pdo->prepare("SELECT licence_key FROM settings LIMIT 1");
 $stmt->execute();

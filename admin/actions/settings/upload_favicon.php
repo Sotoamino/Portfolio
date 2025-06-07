@@ -35,7 +35,13 @@ if (!is_dir($uploadDir)) {
         exit;
     }
 }
-
+if (!extension_loaded('imagick')) {
+    echo json_encode([
+        'success' => false,
+        'message' => 'L’extension Imagick n’est pas installée sur le serveur.'
+    ]);
+    exit;
+}
 // Convertit en .ico avec Imagick
 try {
     $image = new Imagick($tmpPath);

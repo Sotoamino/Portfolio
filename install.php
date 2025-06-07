@@ -90,7 +90,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                   id int NOT NULL AUTO_INCREMENT,
                   titre varchar(255) NOT NULL,
                   entreprise varchar(255) NOT NULL,
-                  content text NOT NULL,
+                  content text DEFAULT NULL,
                   tags varchar(255) DEFAULT NULL,
                   startDate date NOT NULL,
                   endDate date NOT NULL,
@@ -130,7 +130,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 CREATE TABLE projets (
                   id int NOT NULL AUTO_INCREMENT,
                   titre varchar(255) NOT NULL,
-                  description text NOT NULL,
+                  description text DEFAULT NULL,
                   link text CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci,
                   ordre int DEFAULT 0,
                   PRIMARY KEY (id)
