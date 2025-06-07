@@ -259,7 +259,7 @@ $projects = $pdo->query("SELECT * FROM projets ORDER BY ordre ASC")->fetchAll();
     (!empty($settings['github']) && $settings['github_status'])
   ): ?>
 <section id="usefull-links">
-    <h3>Mes liens utiles</h3>
+    <h2>Mes liens utiles</h2>
     <div class="badges-wrapper">
 
       <?php if (!empty($settings['linkedin']) && $settings['linkedin_status']): ?>
