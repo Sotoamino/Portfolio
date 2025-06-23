@@ -152,7 +152,7 @@ $projects = $pdo->query("SELECT * FROM projets ORDER BY ordre ASC")->fetchAll();
     <li><a href="#projects">Projets</a></li>
     <?php endif; ?>
     <?php if (!empty($formations)): ?>
-    <li><a href="#education">Formation</a></li>
+    <li><a href="#formations">Formation</a></li>
     <?php endif; ?>
     <?php if (!empty($settings['contact_api_key'])): ?>
     <li><a href="#contact">Contact</a></li>

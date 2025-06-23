@@ -30,10 +30,10 @@ $currentDisplay = $setting ? $setting['skill_display'] : 'progress_bar'; // vale
 <h2>Gestion des compétences</h2>
 <div style="display:none" id="message"></div>
 <label for="skill-display-select">Mode d'affichage des compétences :</label>
-<select id="skill-display-select" name="skill_display">
+<!-- <select id="skill-display-select" name="skill_display">
   <option value="progress_bar" <?= $currentDisplay === 'progress_bar' ? 'selected' : '' ?>>Progress Bar</option>
   <option value="blocks" <?= $currentDisplay === 'blocks' ? 'selected' : '' ?>>Blocks</option>
-</select>
+</select>-->
 <table class="competence-table">
   <thead>
     <tr>

@@ -62,6 +62,7 @@ if (!isset($_SESSION['CREATED'])) {
             <a href="#" data-page="experiences">📅 Expériences</a>
             <a href="#" data-page="formations">💼 Formations</a>
             <a href="#" data-page="projets">🗂️ Projets</a>
+            <a href="../index.php">🔙 Site</a>
             <a href="logout.php">🚪 Déconnexion</a>
         </nav>
     </header>
