@@ -10,32 +10,40 @@ if (!isset($_SESSION['user_id'])) {
 
 // Vérifie que la méthode POST contient un fichier
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_FILES['file'])) {
-    $uploadDir = $_SERVER['DOCUMENT_ROOT'] . 'assets/images/';
+
+    // Chemin du dossier d’upload avec sécurité
+    $uploadDir = rtrim($_SERVER['DOCUMENT_ROOT'], '/') . '/assets/images/';
 
     // Crée le dossier s'il n'existe pas
     if (!is_dir($uploadDir)) {
         mkdir($uploadDir, 0755, true);
     }
 
-    $fileName = basename($_FILES['file']['name']);
-
-    // Sécurisation du nom du fichier (optionnel mais recommandé)
-    $fileName = preg_replace('/[^a-zA-Z0-9-_\.]/', '', $fileName);
+    // Nettoyage et renommage sécurisé du fichier
+    $originalName = basename($_FILES['file']['name']);
+    $cleanName = preg_replace('/[^a-zA-Z0-9-_\.]/', '', $originalName);
+    $fileName = uniqid('img_', true) . '_' . $cleanName;
 
     $targetFile = $uploadDir . $fileName;
 
-    // Types autorisés
-    $allowedTypes = ['image/jpeg', 'image/png', 'image/gif'];
+    // Types autorisés (par vérification réelle)
+    $allowedTypes = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'];
 
-    if (!in_array($_FILES['file']['type'], $allowedTypes)) {
+    // Détection réelle du type MIME
+    $finfo = finfo_open(FILEINFO_MIME_TYPE);
+    $mimeType = finfo_file($finfo, $_FILES['file']['tmp_name']);
+    finfo_close($finfo);
+
+    if (!in_array($mimeType, $allowedTypes)) {
         http_response_code(400);
         echo json_encode(['success' => false, 'message' => 'Type de fichier non autorisé']);
         exit;
     }
 
+    // Déplacement du fichier
     if (move_uploaded_file($_FILES['file']['tmp_name'], $targetFile)) {
-        // Renvoie l’URL utilisable côté web
-        $url = '../../../assets/images/' . $fileName;
+        // URL publique (chemin absolu depuis la racine du site)
+        $url = '/assets/images/' . $fileName;
 
         echo json_encode([
             'success' => true,
@@ -51,5 +59,3 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_FILES['file'])) {
     http_response_code(400);
     echo json_encode(['success' => false, 'message' => 'Aucun fichier reçu']);
 }
-
-
