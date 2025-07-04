@@ -1,5 +1,6 @@
 <?php
 require_once 'tools/sqlconnect.php';
+$config = json_decode(file_get_contents('./tools/settings.json'), true);
 
 $columnCheck = $pdo->query("SHOW COLUMNS FROM settings LIKE 'theme'")->fetch(PDO::FETCH_ASSOC);
 if (!$columnCheck) {
@@ -224,7 +225,11 @@ $projects = $pdo->query("SELECT * FROM projets ORDER BY ordre ASC")->fetchAll();
         <div class="card">
             <h3><?= htmlspecialchars($forma['name']) ?> - <?= htmlspecialchars($forma['titre']) ?></h3>
             <?php
-            $start = date('m/Y', strtotime($forma['startDate']));
+            if ($config['display_month']) {
+                $start = date('m/Y', strtotime($forma['startDate']));
+            } else {
+                $start = date('Y', strtotime($forma['startDate']));
+            }        
             $endDateValid = !empty($forma['endDate']) && date('d/m/Y', strtotime($exp['endDate'])) !== '30/11/-0001';
             $end = $endDateValid ? date('m/Y', strtotime($forma['endDate'])) : 'En cours';
             ?>

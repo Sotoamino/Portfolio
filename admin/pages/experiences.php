@@ -16,6 +16,9 @@ require_once '../../tools/sqlconnect.php';
 // Récupérer toutes les expériences ordonnées par 'ordre'
 $stmt = $pdo->query("SELECT * FROM experiences ORDER BY `ordre` ASC");
 $experiences = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+$settings = json_decode(file_get_contents(__DIR__ . '/../../tools/settings.json'), true);
+$displayMonthChecked = $settings['display_month'] ? 'checked' : '';
 ?>
 
 <link rel="stylesheet" href="assets/css/experiences.css">
@@ -23,7 +26,10 @@ $experiences = $stmt->fetchAll(PDO::FETCH_ASSOC);
 <h2>Gestion des expériences</h2>
 
 <div style="display:none" id="message"></div>
-
+<div style="margin: 20px 0;">
+  <label for="toggle-display-month">Afficher le mois</label>
+  <input type="checkbox" id="toggle-display-month" <?= $displayMonthChecked ?>>
+</div>
 <table class="experience-table">
   <thead>
     <tr>

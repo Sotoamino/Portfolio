@@ -155,4 +155,26 @@ function initExperiences() {
     val = val.replace(/,\s*/g, ', ');
     $(this).val(val);
   });
+
+  $(document).ready(function () {
+    $('#toggle-display-month').on('change', function () {
+      const isChecked = $(this).is(':checked');
+
+      fetch('actions/update_month.php', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ display_month: isChecked })
+      })
+      .then(res => res.json())
+      .then(data => {
+        if (data.success) {
+          console.log('Paramètre mis à jour');
+        } else {
+          console.error('Erreur :', data.message);
+        }
+      });
+    });
+  });
 };
