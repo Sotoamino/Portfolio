@@ -19,7 +19,7 @@ function progress_bar($part, $datas, $pointer) {
     echo '</section>';
 }
 
-function blocks($mots, $id = null, $title) {
+function blocks($mots,$title, $id = null) {
     $containerId = $id ?: 'container_' . uniqid();
     ?>
     <section id="<?php $id ?>">
