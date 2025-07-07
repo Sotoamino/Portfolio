@@ -277,7 +277,7 @@ button:hover { background: #0056b3; }
 </form>
 <?php else: ?>
 <h2 class="success">Installation terminée avec succès !</h2>
-<p>Vous pouvez maintenant accéder à <code>/admin/</code></p>
+<p>Vous pouvez maintenant accéder à <a href='./admin/'><code>/admin/</code></a></p>
 <?php endif; ?>
 </body>
 </html>
