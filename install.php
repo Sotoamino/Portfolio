@@ -251,32 +251,73 @@ h2.success { color: green; text-align: center; }
 p { margin-top: 10px; }
 p a { color: #007bff; text-decoration: none; }
 p a:hover { text-decoration: underline; }
-  #anime span {
-    display: inline-block; /* essentiel pour que translateY fonctionne */
-    font-size: 3rem;
+  #container {
+    display: flex;
+    align-items: center;
+    gap: 0.1rem;
     font-weight: bold;
-    margin: 0 2px;
+    color: #222;
+  }
+  #m {
+    color:#007BFF;
+  }
+  #yf {
+    color : #555555;
+  }
+  #m, #yf span {
+    display: inline-block;
+    font-weight: bold;
+    font-size: 2.5rem;
+    user-select: none;
+  }
+  #yf {
+    opacity: 0;
+    position: relative;
+    left: -60px; /* place YFOLIO caché à gauche, derrière M */
+    pointer-events: none;
   }
 </style>
 </head>
-<body>
-<h2 id="anime">
-  <span>M</span> <span>Y</span> <span>F</span> <span>O</span> <span>L</span> <span>I</span> <span>O</span>
-</h2>
+<div id="container">
+  <span id="m">M</span>
+  <div id="yf">
+    <span>Y</span><span>F</span><span>O</span><span>L</span><span>I</span><span>O</span>
+  </div>
+</div>
 
 <script src="https://cdn.jsdelivr.net/npm/animejs@3.2.1/lib/anime.min.js"></script>
 <script>
+  const m = document.querySelector('#m');
+  const yf = document.querySelector('#yf');
+  const yfSpans = yf.querySelectorAll('span');
+
   anime({
-    targets: 'h2 span',
+    targets: m,
     rotate: '1turn',
-    delay: anime.stagger(100),
     duration: 2000,
     easing: 'easeInOutSine',
-    direction: 'alternate',
-    loop: false
+    complete: () => {
+      anime.timeline()
+        .add({
+          targets: yf,
+          opacity: [0, 1],
+          left: ['-60px', '0px'],
+          duration: 700,
+          easing: 'easeOutCubic',
+        })
+        .add({
+          targets: yfSpans,
+          ranslateX: [-30, 0], // glisse de gauche vers droite (depuis -30px)
+          opacity: [0, 1],
+          delay: anime.stagger(80),
+          duration: 400,
+          easing: 'easeOutBack',
+          offset: '-=400'
+        });
+    }
   });
 </script>
-
+<br/>
 <?php if (!$install_success && empty($show_db_action_form)): ?>
 <form method="post">
     <input type="hidden" name="step" value="check" />
