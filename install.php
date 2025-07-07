@@ -17,23 +17,26 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $phone = $_POST['phone'] ?? '';
     $licence_key = $_POST['licence_key'] ?? '';
 
-    if ($step === 'check') {
-        try {
-            $pdo = new PDO("mysql:host=$db_host;charset=utf8mb4", $db_user, $db_pass, [
-                PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
-            ]);
-            $statement = $pdo->query("SHOW DATABASES LIKE " . $pdo->quote($db_name));
-            $db_exists = $statement->fetchColumn();
+if ($step === 'check') {
+    try {
+        $pdo = new PDO("mysql:host=$db_host;charset=utf8mb4", $db_user, $db_pass, [
+            PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
+        ]);
+        $statement = $pdo->query("SHOW DATABASES LIKE " . $pdo->quote($db_name));
+        $db_exists = $statement->fetchColumn();
 
-            if ($db_exists) {
-                $show_db_action_form = true;
-            } else {
-                $_POST['step'] = 'install';
-            }
-        } catch (Exception $e) {
-            echo "<p style='color:red;'>Connexion MySQL échouée : " . htmlspecialchars($e->getMessage()) . "</p>";
+        if ($db_exists) {
+            $show_db_action_form = true;  // base existe, demander action à l'utilisateur
+        } else {
+            // Créer la base directement ici
+            $pdo->exec("CREATE DATABASE IF NOT EXISTS `$db_name` CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci");
+            echo "<p style='color:green;'>La base <strong>$db_name</strong> a été créée automatiquement.</p>";
+            $_POST['step'] = 'install';  // passe à l'étape suivante
         }
+    } catch (Exception $e) {
+        echo "<p style='color:red;'>Connexion MySQL échouée : " . htmlspecialchars($e->getMessage()) . "</p>";
     }
+}
 
     if ($_POST['step'] === 'install') {
         $db_existing_action = $_POST['db_existing_action'] ?? '';
@@ -51,6 +54,105 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     exit;
                 } elseif ($db_existing_action === 'drop') {
                     $pdo->exec("DROP DATABASE `$db_name`");
+                    $pdo->exec("CREATE DATABASE IF NOT EXISTS `$db_name` CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci");
+                    $pdo->exec("USE `$db_name`");
+
+                    $pdo->exec("DROP TABLE IF EXISTS settings");
+                    $pdo->exec("CREATE TABLE settings (
+                        id int NOT NULL,
+                        first_name varchar(100),
+                        last_name varchar(100),
+                        email varchar(150),
+                        phone varchar(30),
+                        location varchar(100),
+                        linkedin varchar(100),
+                        linkedin_status tinyint(1) NOT NULL DEFAULT 0,
+                        instagram varchar(100),
+                        instagram_status tinyint(1) NOT NULL DEFAULT 0,
+                        github varchar(100),
+                        github_status tinyint(1) NOT NULL DEFAULT 0,
+                        twitter varchar(100),
+                        twitter_status tinyint(1) NOT NULL DEFAULT 0,
+                        discord varchar(100),
+                        discord_status tinyint(1) NOT NULL DEFAULT 0,
+                        keywords text,
+                        contact_api_key varchar(255),
+                        contact_from varchar(255),
+                        contact_to varchar(255),
+                        maintenance_status tinyint(1) NOT NULL DEFAULT 0,
+                        particle_config VARCHAR(255) DEFAULT 'default.json',
+                        theme VARCHAR(255) DEFAULT 'blue',
+                        licence_key VARCHAR(255),
+                        PRIMARY KEY (id)
+                    ) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4");
+
+                    $stmt = $pdo->prepare("INSERT INTO settings (id, first_name, last_name, email, phone, licence_key) VALUES (1, ?, ?, ?, ?, ?)");
+                    $stmt->execute([$first_name, $last_name, $email, $phone, $licence_key]);
+                    $pdo->exec("DROP TABLE IF EXISTS competences");
+                    $pdo->exec("
+                        CREATE TABLE competences (
+                        id int NOT NULL AUTO_INCREMENT,
+                        nom varchar(100) NOT NULL,
+                        niveau int NOT NULL,
+                        ordre int DEFAULT 0,
+                        PRIMARY KEY (id)
+                        ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3
+                    ");
+
+                    $pdo->exec("DROP TABLE IF EXISTS experiences");
+                    $pdo->exec("
+                        CREATE TABLE experiences (
+                        id int NOT NULL AUTO_INCREMENT,
+                        titre varchar(255) NOT NULL,
+                        entreprise varchar(255) NOT NULL,
+                        content text DEFAULT NULL,
+                        tags varchar(255) DEFAULT NULL,
+                        startDate date NOT NULL,
+                        endDate date NOT NULL,
+                        ordre int DEFAULT 0,
+                        PRIMARY KEY (id)
+                        ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3
+                    ");
+
+                    $pdo->exec("DROP TABLE IF EXISTS formations");
+                    $pdo->exec("
+                        CREATE TABLE formations (
+                        id int NOT NULL AUTO_INCREMENT,
+                        name varchar(255) NOT NULL,
+                        titre varchar(255) NOT NULL,
+                        startDate date NOT NULL,
+                        endDate date NOT NULL,
+                        ordre int NOT NULL,
+                        link varchar(255) NOT NULL,
+                        description text NOT NULL,
+                        PRIMARY KEY (id)
+                        ) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci
+                    ");
+
+                    $pdo->exec("DROP TABLE IF EXISTS langues");
+                    $pdo->exec("
+                        CREATE TABLE langues (
+                        id int NOT NULL AUTO_INCREMENT,
+                        nom varchar(100) NOT NULL,
+                        niveau int NOT NULL,
+                        ordre int DEFAULT 0,
+                        PRIMARY KEY (id)
+                        ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3
+                    ");
+
+                    $pdo->exec("DROP TABLE IF EXISTS projets");
+                    $pdo->exec("
+                        CREATE TABLE projets (
+                        id int NOT NULL AUTO_INCREMENT,
+                        titre varchar(255) NOT NULL,
+                        description text DEFAULT NULL,
+                        link text CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci,
+                        ordre int DEFAULT 0,
+                        PRIMARY KEY (id)
+                        ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3
+                    ");
+                    echo "<p style='color:green;'>La base a été supprimée et recréée.</p>";
+                    $_POST['step'] = 'install';  // passe à l'étape suivante
                 } elseif ($db_existing_action !== 'keep') {
                     $pdo->exec("DELETE FROM settings WHERE id = 1");
                     $stmt = $pdo->prepare("INSERT INTO settings (id, first_name, last_name, email, phone, licence_key) VALUES (1, ?, ?, ?, ?, ?)");
@@ -60,103 +162,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 }
             }
 
-            $pdo->exec("CREATE DATABASE IF NOT EXISTS `$db_name` CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci");
-            $pdo->exec("USE `$db_name`");
-
-            $pdo->exec("DROP TABLE IF EXISTS settings");
-            $pdo->exec("CREATE TABLE settings (
-                id int NOT NULL,
-                first_name varchar(100),
-                last_name varchar(100),
-                email varchar(150),
-                phone varchar(30),
-                location varchar(100),
-                linkedin varchar(100),
-                linkedin_status tinyint(1) NOT NULL DEFAULT 0,
-                instagram varchar(100),
-                instagram_status tinyint(1) NOT NULL DEFAULT 0,
-                github varchar(100),
-                github_status tinyint(1) NOT NULL DEFAULT 0,
-                twitter varchar(100),
-                twitter_status tinyint(1) NOT NULL DEFAULT 0,
-                discord varchar(100),
-                discord_status tinyint(1) NOT NULL DEFAULT 0,
-                keywords text,
-                contact_api_key varchar(255),
-                contact_from varchar(255),
-                contact_to varchar(255),
-                maintenance_status tinyint(1) NOT NULL DEFAULT 0,
-                particle_config VARCHAR(255) DEFAULT 'default.json',
-                theme VARCHAR(255) DEFAULT 'blue',
-                licence_key VARCHAR(255),
-                PRIMARY KEY (id)
-            ) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4");
-
-            $stmt = $pdo->prepare("INSERT INTO settings (id, first_name, last_name, email, phone, licence_key) VALUES (1, ?, ?, ?, ?, ?)");
-            $stmt->execute([$first_name, $last_name, $email, $phone, $licence_key]);
-$pdo->exec("DROP TABLE IF EXISTS competences");
-            $pdo->exec("
-                CREATE TABLE competences (
-                  id int NOT NULL AUTO_INCREMENT,
-                  nom varchar(100) NOT NULL,
-                  niveau int NOT NULL,
-                  ordre int DEFAULT 0,
-                  PRIMARY KEY (id)
-                ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3
-            ");
-
-            $pdo->exec("DROP TABLE IF EXISTS experiences");
-            $pdo->exec("
-                CREATE TABLE experiences (
-                  id int NOT NULL AUTO_INCREMENT,
-                  titre varchar(255) NOT NULL,
-                  entreprise varchar(255) NOT NULL,
-                  content text DEFAULT NULL,
-                  tags varchar(255) DEFAULT NULL,
-                  startDate date NOT NULL,
-                  endDate date NOT NULL,
-                  ordre int DEFAULT 0,
-                  PRIMARY KEY (id)
-                ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3
-            ");
-
-            $pdo->exec("DROP TABLE IF EXISTS formations");
-            $pdo->exec("
-                CREATE TABLE formations (
-                  id int NOT NULL AUTO_INCREMENT,
-                  name varchar(255) NOT NULL,
-                  titre varchar(255) NOT NULL,
-                  startDate date NOT NULL,
-                  endDate date NOT NULL,
-                  ordre int NOT NULL,
-                  link varchar(255) NOT NULL,
-                  description text NOT NULL,
-                  PRIMARY KEY (id)
-                ) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci
-            ");
-
-            $pdo->exec("DROP TABLE IF EXISTS langues");
-            $pdo->exec("
-                CREATE TABLE langues (
-                  id int NOT NULL AUTO_INCREMENT,
-                  nom varchar(100) NOT NULL,
-                  niveau int NOT NULL,
-                  ordre int DEFAULT 0,
-                  PRIMARY KEY (id)
-                ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3
-            ");
-
-            $pdo->exec("DROP TABLE IF EXISTS projets");
-            $pdo->exec("
-                CREATE TABLE projets (
-                  id int NOT NULL AUTO_INCREMENT,
-                  titre varchar(255) NOT NULL,
-                  description text DEFAULT NULL,
-                  link text CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci,
-                  ordre int DEFAULT 0,
-                  PRIMARY KEY (id)
-                ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3
-            ");
+            
 function recurse_copy($src, $dst) {
                 $dir = opendir($src);
                 if (!is_dir($dst)) mkdir($dst, 0755, true);
