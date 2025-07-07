@@ -225,18 +225,58 @@ function recurse_copy($src, $dst) {
 <html lang="fr">
 <head>
 <meta charset="UTF-8">
-<title>Installation Portfolio</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Installation du Portfolio</title>
+<meta name="description" content="Installation du Portfolio - Configuration de la base de données et des informations administratives.">
+<meta name="keywords" content="installation, portfolio, base de données, configuration, admin">
+<meta name="author" content="Sotoamino">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+
 <style>
+
 body { font-family: 'Segoe UI', sans-serif; max-width: 600px; margin: auto; padding: 20px; background: #f9f9f9; }
 label { display: block; margin-top: 15px; font-weight: bold; }
 input[type=text], input[type=password] { width: 100%; padding: 10px; margin-top: 5px; box-sizing: border-box; border: 1px solid #ccc; border-radius: 4px; }
 button { margin-top: 20px; padding: 10px 20px; background: #007bff; color: white; border: none; border-radius: 5px; cursor: pointer; }
 button:hover { background: #0056b3; }
 .success { color: green; font-weight: bold; }
+h1 { text-align: center; color: #333; }
+h2 { color: #555; }
+form { background: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+input[type=hidden] { display: none; }
+select { width: 100%; padding: 10px; margin-top: 5px; box-sizing: border-box; border: 1px solid #ccc; border-radius: 4px; }
+select:focus { outline: none; border-color: #007bff; } 
+h2.success { color: green; text-align: center; }
+p { margin-top: 10px; }
+p a { color: #007bff; text-decoration: none; }
+p a:hover { text-decoration: underline; }
+  #anime span {
+    display: inline-block; /* essentiel pour que translateY fonctionne */
+    font-size: 3rem;
+    font-weight: bold;
+    margin: 0 2px;
+  }
 </style>
 </head>
 <body>
-<h1>Installation du Portfolio</h1>
+<h2 id="anime">
+  <span>M</span> <span>Y</span> <span>F</span> <span>O</span> <span>L</span> <span>I</span> <span>O</span>
+</h2>
+
+<script src="https://cdn.jsdelivr.net/npm/animejs@3.2.1/lib/anime.min.js"></script>
+<script>
+  anime({
+    targets: 'h2 span',
+    rotate: '1turn',
+    delay: anime.stagger(100),
+    duration: 2000,
+    easing: 'easeInOutSine',
+    direction: 'alternate',
+    loop: false
+  });
+</script>
+
 <?php if (!$install_success && empty($show_db_action_form)): ?>
 <form method="post">
     <input type="hidden" name="step" value="check" />
