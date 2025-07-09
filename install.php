@@ -7,58 +7,54 @@ $show_db_action_form = false;
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $step = $_POST['step'] ?? 'check';
 
-    $db_host = $_POST['db_host'] ?? 'localhost';
-    $db_name = $_POST['db_name'] ?? '';
-    $db_user = $_POST['db_user'] ?? '';
+    $db_host = trim($_POST['db_host'] ?? 'localhost');
+    $db_name = trim($_POST['db_name'] ?? '');
+    $db_user = trim($_POST['db_user'] ?? '');
     $db_pass = $_POST['db_pass'] ?? '';
-    $first_name = $_POST['first_name'] ?? '';
-    $last_name = $_POST['last_name'] ?? '';
-    $email = $_POST['email'] ?? '';
-    $phone = $_POST['phone'] ?? '';
-    $licence_key = $_POST['licence_key'] ?? '';
+    $first_name = trim($_POST['first_name'] ?? '');
+    $last_name = trim($_POST['last_name'] ?? '');
+    $email = trim($_POST['email'] ?? '');
+    $phone = trim($_POST['phone'] ?? '');
+    $licence_key = trim($_POST['licence_key'] ?? '');
 
-if ($step === 'check') {
     try {
         $pdo = new PDO("mysql:host=$db_host;charset=utf8mb4", $db_user, $db_pass, [
             PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
         ]);
-        $statement = $pdo->query("SHOW DATABASES LIKE " . $pdo->quote($db_name));
-        $db_exists = $statement->fetchColumn();
 
-        if ($db_exists) {
-            $show_db_action_form = true;  // base existe, demander action à l'utilisateur
-        } else {
-            // Créer la base directement ici
-            $pdo->exec("CREATE DATABASE IF NOT EXISTS `$db_name` CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci");
-            echo "<p style='color:green;'>La base <strong>$db_name</strong> a été créée automatiquement.</p>";
-            $_POST['step'] = 'install';  // passe à l'étape suivante
+        if ($step === 'check') {
+            echo "<p style='color:green;'>Connexion &agrave; MySQL r&eacute;ussie.</p>";
+            $statement = $pdo->query("SHOW DATABASES LIKE " . $pdo->quote($db_name));
+            $db_exists = $statement->fetchColumn();
+            if ($db_exists) {
+                $show_db_action_form = true;
+            } else {
+                $pdo->exec("CREATE DATABASE `$db_name` CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci");
+                echo "<p style='color:green;'>La base <strong>$db_name</strong> a &eacute;t&eacute; cr&eacute;&eacute;e automatiquement.</p>";
+                $_POST['step'] = 'configure';
+                $step = 'configure';
+            }
         }
-    } catch (Exception $e) {
-        echo "<p style='color:red;'>Connexion MySQL échouée : " . htmlspecialchars($e->getMessage()) . "</p>";
-    }
-}
 
-    if ($_POST['step'] === 'install') {
-        $db_existing_action = $_POST['db_existing_action'] ?? '';
-        try {
-            $pdo = new PDO("mysql:host=$db_host;charset=utf8mb4", $db_user, $db_pass, [
-                PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
-            ]);
-
+        if ($step === 'configure' || $step === 'install') {
+            echo "<p style='color:green;'>Configuration de la base de donn&eacute;es.</p>";
+            $pdo->exec("USE `$db_name`");
+            $db_existing_action = $_POST['db_existing_action'] ?? '';
             $statement = $pdo->query("SHOW DATABASES LIKE " . $pdo->quote($db_name));
             $db_exists = $statement->fetchColumn();
 
             if ($db_exists) {
                 if ($db_existing_action === 'cancel') {
-                    echo "<p style='color:red;'>Installation annulée. La base <strong>$db_name</strong> existe déjà.</p>";
+                    echo "<p style='color:red;'>Installation annul&eacute;e. La base <strong>$db_name</strong> existe d&eacute;j&agrave;.</p>";
                     exit;
-                } elseif ($db_existing_action === 'drop') {
-                    $pdo->exec("DROP DATABASE `$db_name`");
-                    $pdo->exec("CREATE DATABASE IF NOT EXISTS `$db_name` CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci");
-                    $pdo->exec("USE `$db_name`");
+                } elseif ($db_existing_action === 'keep') {
 
-                    $pdo->exec("DROP TABLE IF EXISTS settings");
-                    $pdo->exec("CREATE TABLE settings (
+                }
+                else  {
+                    $pdo->exec("DROP DATABASE `$db_name`");
+                    $pdo->exec("CREATE DATABASE `$db_name` CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci");
+                    $pdo->exec("USE `$db_name`");
+                    $pdo->exec("CREATE TABLE IF NOT EXISTS settings (
                         id int NOT NULL,
                         first_name varchar(100),
                         last_name varchar(100),
@@ -86,22 +82,15 @@ if ($step === 'check') {
                         PRIMARY KEY (id)
                     ) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4");
 
-                    $stmt = $pdo->prepare("INSERT INTO settings (id, first_name, last_name, email, phone, licence_key) VALUES (1, ?, ?, ?, ?, ?)");
-                    $stmt->execute([$first_name, $last_name, $email, $phone, $licence_key]);
-                    $pdo->exec("DROP TABLE IF EXISTS competences");
-                    $pdo->exec("
-                        CREATE TABLE competences (
+                    $pdo->exec("CREATE TABLE IF NOT EXISTS competences (
                         id int NOT NULL AUTO_INCREMENT,
                         nom varchar(100) NOT NULL,
                         niveau int NOT NULL,
                         ordre int DEFAULT 0,
                         PRIMARY KEY (id)
-                        ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3
-                    ");
+                    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3");
 
-                    $pdo->exec("DROP TABLE IF EXISTS experiences");
-                    $pdo->exec("
-                        CREATE TABLE experiences (
+                    $pdo->exec("CREATE TABLE IF NOT EXISTS experiences (
                         id int NOT NULL AUTO_INCREMENT,
                         titre varchar(255) NOT NULL,
                         entreprise varchar(255) NOT NULL,
@@ -111,12 +100,9 @@ if ($step === 'check') {
                         endDate date NOT NULL,
                         ordre int DEFAULT 0,
                         PRIMARY KEY (id)
-                        ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3
-                    ");
+                    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3");
 
-                    $pdo->exec("DROP TABLE IF EXISTS formations");
-                    $pdo->exec("
-                        CREATE TABLE formations (
+                    $pdo->exec("CREATE TABLE IF NOT EXISTS formations (
                         id int NOT NULL AUTO_INCREMENT,
                         name varchar(255) NOT NULL,
                         titre varchar(255) NOT NULL,
@@ -126,44 +112,32 @@ if ($step === 'check') {
                         link varchar(255) NOT NULL,
                         description text NOT NULL,
                         PRIMARY KEY (id)
-                        ) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci
-                    ");
+                    ) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci");
 
-                    $pdo->exec("DROP TABLE IF EXISTS langues");
-                    $pdo->exec("
-                        CREATE TABLE langues (
+                    $pdo->exec("CREATE TABLE IF NOT EXISTS langues (
                         id int NOT NULL AUTO_INCREMENT,
                         nom varchar(100) NOT NULL,
                         niveau int NOT NULL,
                         ordre int DEFAULT 0,
                         PRIMARY KEY (id)
-                        ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3
-                    ");
+                    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3");
 
-                    $pdo->exec("DROP TABLE IF EXISTS projets");
-                    $pdo->exec("
-                        CREATE TABLE projets (
+                    $pdo->exec("CREATE TABLE IF NOT EXISTS projets (
                         id int NOT NULL AUTO_INCREMENT,
                         titre varchar(255) NOT NULL,
                         description text DEFAULT NULL,
                         link text CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci,
                         ordre int DEFAULT 0,
                         PRIMARY KEY (id)
-                        ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3
-                    ");
-                    echo "<p style='color:green;'>La base a été supprimée et recréée.</p>";
-                    $_POST['step'] = 'install';  // passe à l'étape suivante
-                } elseif ($db_existing_action !== 'keep') {
-                    $pdo->exec("DELETE FROM settings WHERE id = 1");
-                    $stmt = $pdo->prepare("INSERT INTO settings (id, first_name, last_name, email, phone, licence_key) VALUES (1, ?, ?, ?, ?, ?)");
-                    $stmt->execute([$first_name, $last_name, $email, $phone, $licence_key]);
-                    echo "<p style='color:green;'>La base a été conservé.</p>";
+                    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3");
+
+                    echo "<p style='color:green;'>La base a &eacute;t&eacute; configur&eacute;e avec succ&egrave;s.</p>";
+                } else {
+                    echo "<p style='color:red;'>Action invalide sur la base existante.</p>";
                     exit;
                 }
-            }
-
-            
-function recurse_copy($src, $dst) {
+            }       
+            function recurse_copy($src, $dst) {
                 $dir = opendir($src);
                 if (!is_dir($dst)) mkdir($dst, 0755, true);
                 while(false !== ($file = readdir($dir))) {
@@ -220,10 +194,10 @@ function recurse_copy($src, $dst) {
                 echo "<p>Le fichier <code>install.php</code> a été supprimé.</p>";
             }
             $install_success = true;
-
-        } catch (Exception $e) {
-            echo "<p style='color:red;'>Erreur : " . htmlspecialchars($e->getMessage()) . "</p>";
         }
+    } catch (Exception $e) {
+        echo "<p style='color:red;'>Erreur lors de la configuration : ". htmlspecialchars($e->getMessage()) . "</p>";
+        exit;
     }
 }
 ?>
