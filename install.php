@@ -17,7 +17,7 @@ if (isset($_GET['fetchLog']) && $_GET['fetchLog'] == '1') {
 
 // Déclaration variables
 $install_success = false;
-$install_path = dirname(__FILE__);
+$install_path = __DIR__;
 $show_db_action_form = false;
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
@@ -177,21 +177,24 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
 
         // Si la base existe déjà, afficher formulaire d’action et ne pas continuer (ce formulaire sera affiché en HTML)
-        if ($show_db_action_form) {
-            // On sort du PHP pour afficher formulaire en HTML plus bas
-        } else {
-            // Suite : copie archive GitHub
-
+        if (!$show_db_action_form) {
             logMessage("[INFO] Début de la copie des fichiers.");
 
             // Fonctions internes
-            function recurse_copy($src, $dst) {
+            function recurse_copy($src, $dst, $excluded = []) {
                 $dir = opendir($src);
                 if (!is_dir($dst)) mkdir($dst, 0755, true);
                 while(false !== ($file = readdir($dir))) {
-                    if (($file != '.') && ($file != '..')) {
-                        if (is_dir("$src/$file")) recurse_copy("$src/$file", "$dst/$file");
-                        else copy("$src/$file", "$dst/$file");
+                    if ($file === '.' || $file === '..') continue;
+                    if (in_array($file, $excluded)) continue;
+
+                    $srcPath = "$src/$file";
+                    $dstPath = "$dst/$file";
+
+                    if (is_dir($srcPath)) {
+                        recurse_copy($srcPath, $dstPath, $excluded);
+                    } else {
+                        copy($srcPath, $dstPath);
                     }
                 }
                 closedir($dir);
@@ -200,7 +203,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             function rrmdir($dir) {
                 if (!is_dir($dir)) return;
                 foreach (array_diff(scandir($dir), ['.', '..']) as $file) {
-                    (is_dir("$dir/$file")) ? rrmdir("$dir/$file") : unlink("$dir/$file");
+                    $path = "$dir/$file";
+                    is_dir($path) ? rrmdir($path) : unlink($path);
                 }
                 rmdir($dir);
             }
@@ -217,60 +221,55 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             file_put_contents($zipFile, $zipContent);
             logMessage("[OK] Archive téléchargée.");
 
-            // Extraction
+            // Extraction temporaire
+            $tempDir = sys_get_temp_dir() . '/portfolio_install_' . uniqid();
+            mkdir($tempDir, 0755, true);
+
             $zip = new ZipArchive;
             if ($zip->open($zipFile) === TRUE) {
-                $extractPath = $install_path . '/Portfolio-main';
+                $zip->extractTo($tempDir);
+                $zip->close();
+                unlink($zipFile);
+                logMessage("[OK] Archive extraite dans dossier temporaire.");
 
-                // Supprime le dossier s'il existe déjà
-                rrmdir($extractPath);
-                mkdir($extractPath, 0755, true);
+                // Détecter le dossier racine de l'archive
+                $entries = array_diff(scandir($tempDir), ['.', '..']);
+                $sourceRoot = reset($entries); // ex: "Portfolio-main"
+                $sourcePath = $tempDir . '/' . $sourceRoot;
 
-                // Liste des fichiers à ignorer (exact ou par motif)
-                $excludedFiles = [
-                    'Portfolio-main/install.php',
-                    'Portfolio-main/.gitignore',
-                    'Portfolio-main/LICENSE',
-                    'Portfolio-main/LICENSE.txt'
-                ];
+                // Liste des fichiers à exclure (dans la racine du projet)
+                $excludedFiles = ['install.php', '.gitignore', 'LICENSE', 'LICENSE.txt', 'README.md'];
 
-                for ($i = 0; $i < $zip->numFiles; $i++) {
-                    $filename = $zip->getNameIndex($i);
+                // Copie dans le dossier courant (__DIR__)
+                recurse_copy($sourcePath, __DIR__, $excludedFiles);
+                logMessage("[OK] Fichiers copiés dans le dossier courant.");
 
-                    // Ignore les fichiers listés
-                    if (in_array($filename, $excludedFiles)) {
-                        continue;
-                    }
+                // Supprimer le dossier temporaire
+                rrmdir($tempDir);
 
-                    // Crée le chemin de destination
-                    $destination = $install_path . '/' . $filename;
+                // Créer fichier options.php
+                $configContent = "<?php\n" .
+                    "\$host = " . var_export($db_host, true) . ";\n" .
+                    "\$db = " . var_export($db_name, true) . ";\n" .
+                    "\$user = " . var_export($db_user, true) . ";\n" .
+                    "\$pass = " . var_export($db_pass, true) . ";\n" .
+                    "?>\n";
+                file_put_contents(__DIR__ . '/tools/options.php', $configContent);
 
-                    // Si c’est un dossier, on le crée
-                    if (substr($filename, -1) === '/') {
-                        if (!is_dir($destination)) {
-                            mkdir($destination, 0755, true);
-                        }
-                    } else {
-                        // Crée les dossiers parents si besoin
-                        $parentDir = dirname($destination);
-                        if (!is_dir($parentDir)) {
-                            mkdir($parentDir, 0755, true);
-                        }
-
-                        // Extrait le fichier en copiant depuis l’archive
-                        copy("zip://{$zipFile}#{$filename}", $destination);
-                    }
+                // Supprimer install.log et install.php
+                @unlink('./install.log');
+                $install_file = __FILE__;
+                if (!@unlink($install_file)) {
+                    logMessage("[ERROR] Impossible de supprimer le fichier d'installation.");
                 }
 
-                $zip->close();
-                logMessage("[OK] Archive extraite avec exclusions.");
+                logMessage("[OK] Installation terminée.");
+                $install_success = true;
+
             } else {
                 logMessage("[ERROR] Extraction échouée.");
                 die("Erreur extraction archive.");
             }
-
-            $install_success = true;
-
         }
 
     } catch (PDOException $e) {
@@ -376,7 +375,7 @@ p a:hover { text-decoration: underline; }
         <p>La base de données <strong><?php echo htmlspecialchars($db_name); ?></strong> existe déjà.</p>
         <p>Que voulez-vous faire ?</p>
 
-        <label><input type="radio" name="db_existing_action" value="keep" checked> Conserver la base et mettre à jour les données</label><br>
+        <label><input type="radio" name="db_existing_action" value="keep" checked> Conserver la base (les configuration seront écrasés)</label><br>
         <label><input type="radio" name="db_existing_action" value="drop"> Supprimer la base et tout recréer</label><br>
         <label><input type="radio" name="db_existing_action" value="cancel"> Annuler l'installation</label><br>
 
@@ -389,13 +388,13 @@ p a:hover { text-decoration: underline; }
         <label>Hôte MySQL : <input type="text" name="db_host" value="localhost" required></label>
         <label>Nom de la base : <input type="text" name="db_name" required></label>
         <label>Utilisateur MySQL : <input type="text" name="db_user" required></label>
-        <label>Mot de passe : <input type="password" name="db_pass"></label><br><br>
+        <label>Mot de passe : <input type="password" name="db_pass" required></label><br><br>
 
         <label>Prénom : <input type="text" name="first_name" required></label>
         <label>Nom : <input type="text" name="last_name" required></label>
-        <label>Email : <input type="email" name="email" required></label>
+        <label>Email : <input type="email" name="email" ></label>
         <label>Téléphone : <input type="text" name="phone"></label>
-        <label>Clé licence : <input type="text" name="licence_key" required></label>
+        <label>Clé licence : <input type="text" name="licence_key" ></label>
 
         <button type="submit">Installer</button>
     </form>
@@ -435,7 +434,7 @@ async function fetchLog() {
 }
 
 // Actualiser le log toutes les 2 secondes
-setInterval(fetchLog, 2000);
+setInterval(fetchLog, 1000);
 fetchLog();
 </script>
 
